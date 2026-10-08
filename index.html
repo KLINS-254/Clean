@@ -1,59 +1,54 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Seat Map</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-  body{
-    margin:0;
-    background:#fff;
-    font-family: Arial, sans-serif;
-    display:flex;
-    justify-content:center;
-  }
-  .bus{
-    width:360px;
-    padding:30px 15px;
-    position:relative;
-  }
-  .row{
-    display:grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    align-items:center;
-    height:95px;
-    gap:10px;
-  }
-  .seat{
-    width:52px;
-    height:52px;
-    position:relative;
-    display:flex;
-    justify-content:center;
-  }
-  .seat .icon{
-    width:48px;
-    height:42px;
-    border:2px solid #0B63F6;
-    border-top:3px solid #0B63F6;
-    border-radius:8px 8px 4px 4px;
-    background:#E8F1FF;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:18px;
-    font-weight:500;
-    color:#000;
-    position:relative;
-  }
-  .seat .icon::before, .seat .icon::after{
-    content:"";
-    position:absolute;
-    bottom:-6px;
-    width:10px;
-    height:18px;
-    background:#0B63F6;
-    border-radius:2px;
-  }
-  .seat .icon::before{ left:-2px; }
-  .seat .icon
+body{margin:0;background:#fff;display:flex;justify-content:center}
+.bus{width:360px;height:640px;position:relative;background:#fff}
+.seat{position:absolute;width:52px;height:50px}
+.seat-box{
+  width:48px;height:38px;border:2px solid #0B63F6;
+  background:#EAF2FF;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:Arial;font-size:16px;color:#000
+}
+.seat-box.grey{border-color:#C2C2C2;background:#E6E6E6;color:#A8A8A8}
+.leg{position:absolute;bottom:0;width:10px;height:12px;background:#0B63F6}
+.leg.grey{background:#9A9A9A}
+.leg.l{left:0} .leg.r{right:4px}
+.door{
+  position:absolute;left:10px;top:145px;
+  width:42px;height:130px;
+  border:2px dashed #D5D5D5;border-radius:5px
+}
+.wheel{position:absolute;left:280px;top:15px;width:50px;height:50px;border:2px solid #000;border-radius:50%}
+.wheel:after{content:"";position:absolute;left:13px;top:13px;width:20px;height:20px;border:2px solid #000;border-radius:50%}
+</style>
+</head>
+<body>
+<div class="bus">
+  <!-- Top -->
+  <div class="seat" style="left:35px;top:20px"><div class="seat-box">1</div><div class="leg l"></div><div class="leg r"></div></div>
+  <div class="seat" style="left:155px;top:20px"><div class="seat-box">1 X</div><div class="leg l"></div><div class="leg r"></div></div>
+  <div class="wheel"></div>
+
+  <div class="door"></div>
+
+  <!-- Row 2 -->
+  <div class="seat" style="left:95px;top:160px"><div class="seat-box grey">2</div><div class="leg grey l"></div><div class="leg grey r"></div></div>
+  <div class="seat" style="left:180px;top:160px"><div class="seat-box">3</div><div class="leg l"></div><div class="leg r"></div></div>
+  <div class="seat" style="left:280px;top:160px"><div class="seat-box">4</div><div class="leg l"></div><div class="leg r"></div></div>
+
+  <!-- Row 3 -->
+  <div class="seat" style="left:95px;top:310px"><div class="seat-box grey">5</div><div class="leg grey l"></div><div class="leg grey r"></div></div>
+  <div class="seat" style="left:180px;top:310px"><div class="seat-box">6</div><div class="leg l"></div><div class="leg r"></div></div>
+  <div class="seat" style="left:280px;top:310px"><div class="seat-box">7</div><div class="leg l"></div><div class="leg r"></div></div>
+
+  <!-- Row 4 -->
+  <div class="seat" style="left:30px;top:480px"><div class="seat-box">8</div><div class="leg l"></div><div class="leg r"></div></div>
+  <div class="seat" style="left:180px;top:480px"><div class="seat-box">9</div><div class="leg l"></div><div class="leg r"></div></div>
+  <div class="seat" style="left:280px;top:480px"><div class="seat-box">10</div><div class="leg l"></div><div class="leg r"></div></div>
+</div>
+</body>
+</html>
