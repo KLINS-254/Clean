@@ -1,54 +1,270 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
-body{margin:0;background:#fff;display:flex;justify-content:center}
-.bus{width:360px;height:640px;position:relative;background:#fff}
-.seat{position:absolute;width:52px;height:50px}
-.seat-box{
-  width:48px;height:38px;border:2px solid #0B63F6;
-  background:#EAF2FF;border-radius:8px;
-  display:flex;align-items:center;justify-content:center;
-  font-family:Arial;font-size:16px;color:#000
-}
-.seat-box.grey{border-color:#C2C2C2;background:#E6E6E6;color:#A8A8A8}
-.leg{position:absolute;bottom:0;width:10px;height:12px;background:#0B63F6}
-.leg.grey{background:#9A9A9A}
-.leg.l{left:0} .leg.r{right:4px}
-.door{
-  position:absolute;left:10px;top:145px;
-  width:42px;height:130px;
-  border:2px dashed #D5D5D5;border-radius:5px
-}
-.wheel{position:absolute;left:280px;top:15px;width:50px;height:50px;border:2px solid #000;border-radius:50%}
-.wheel:after{content:"";position:absolute;left:13px;top:13px;width:20px;height:20px;border:2px solid #000;border-radius:50%}
-</style>
+  <meta charset="UTF-8">
+  <title>Bus Seat Layout</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: #ffffff;
+      font-family: Arial, Helvetica, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .bus-container {
+      position: relative;
+      width: 480px;
+      height: 600px;
+      padding: 20px;
+      background: #fff;
+    }
+
+    /* Grid Layout: 5 rows x 3 columns for seats */
+    .seating-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(5, 1fr);
+      height: 100%;
+      width: 100%;
+      align-items: center;
+      justify-items: center;
+    }
+
+    /* Seat Component */
+    .seat {
+      width: 46px;
+      height: 44px;
+      background-color: #1e88e5;
+      border-radius: 6px 6px 4px 4px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Outer seat cushion accent lines */
+    .seat::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 10px;
+      background-color: #1565c0;
+      border-radius: 0 0 4px 4px;
+    }
+
+    /* Inner white backrest area */
+    .seat-inner {
+      width: 36px;
+      height: 30px;
+      background-color: #ffffff;
+      border-radius: 4px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1;
+    }
+
+    .seat-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: #111111;
+      letter-spacing: -0.5px;
+    }
+
+    /* Steering Wheel Icon */
+    .steering-wheel-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .steering-wheel {
+      width: 42px;
+      height: 42px;
+      border: 2.5px solid #111;
+      border-radius: 50%;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .steering-wheel .center-cap {
+      width: 14px;
+      height: 14px;
+      border: 2px solid #111;
+      border-radius: 50%;
+      z-index: 2;
+      background: #fff;
+    }
+
+    .steering-wheel .spoke-bottom {
+      position: absolute;
+      width: 2px;
+      height: 12px;
+      background-color: #111;
+      bottom: 2px;
+    }
+
+    .steering-wheel .spoke-left {
+      position: absolute;
+      width: 12px;
+      height: 2px;
+      background-color: #111;
+      left: 2px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .steering-wheel .spoke-right {
+      position: absolute;
+      width: 12px;
+      height: 2px;
+      background-color: #111;
+      right: 2px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* Door indicator on the left side */
+    .door-indicator {
+      position: absolute;
+      left: -10px;
+      top: 32%;
+      width: 50px;
+      height: 130px;
+      border: 2px dashed #cccccc;
+      border-radius: 4px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .door-text {
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      color: #aaaaaa;
+      font-size: 15px;
+      font-weight: 400;
+      letter-spacing: 1px;
+    }
+  </style>
 </head>
 <body>
-<div class="bus">
-  <!-- Top -->
-  <div class="seat" style="left:35px;top:20px"><div class="seat-box">1</div><div class="leg l"></div><div class="leg r"></div></div>
-  <div class="seat" style="left:155px;top:20px"><div class="seat-box">1 X</div><div class="leg l"></div><div class="leg r"></div></div>
-  <div class="wheel"></div>
 
-  <div class="door"></div>
+  <div class="bus-container">
+    
+    <!-- Left Door -->
+    <div class="door-indicator">
+      <span class="door-text">Door</span>
+    </div>
 
-  <!-- Row 2 -->
-  <div class="seat" style="left:95px;top:160px"><div class="seat-box grey">2</div><div class="leg grey l"></div><div class="leg grey r"></div></div>
-  <div class="seat" style="left:180px;top:160px"><div class="seat-box">3</div><div class="leg l"></div><div class="leg r"></div></div>
-  <div class="seat" style="left:280px;top:160px"><div class="seat-box">4</div><div class="leg l"></div><div class="leg r"></div></div>
+    <!-- Bus Seats Grid -->
+    <div class="seating-grid">
+      
+      <!-- Row 1 -->
+      <div class="seat">
+        <div class="seat-inner">
+          <span class="seat-label">1L</span>
+        </div>
+      </div>
+      <div class="seat">
+        <div class="seat-inner">
+          <span class="seat-label">1XL</span>
+        </div>
+      </div>
+      <div class="steering-wheel-container">
+        <div class="steering-wheel">
+          <div class="center-cap"></div>
+          <div class="spoke-bottom"></div>
+          <div class="spoke-left"></div>
+          <div class="spoke-right"></div>
+        </div>
+      </div>
 
-  <!-- Row 3 -->
-  <div class="seat" style="left:95px;top:310px"><div class="seat-box grey">5</div><div class="leg grey l"></div><div class="leg grey r"></div></div>
-  <div class="seat" style="left:180px;top:310px"><div class="seat-box">6</div><div class="leg l"></div><div class="leg r"></div></div>
-  <div class="seat" style="left:280px;top:310px"><div class="seat-box">7</div><div class="leg l"></div><div class="leg r"></div></div>
+      <!-- Row 2 -->
+      <div class="seat">
+        <div class="seat-inner">
+          <span class="seat-label">2L</span>
+        </div>
+      </div>
+      <div class="seat">
+        <div class="seat-inner">
+          <span class="seat-label">3L</span>
+        </div>
+      </div>
+      <div class="seat">
+        <div class="seat-inner">
+          <span class="seat-label">4L</span>
+        </div>
+      </div>
 
-  <!-- Row 4 -->
-  <div class="seat" style="left:30px;top:480px"><div class="seat-box">8</div><div class="leg l"></div><div class="leg r"></div></div>
-  <div class="seat" style="left:180px;top:480px"><div class="seat-box">9</div><div class="leg l"></div><div class="leg r"></div></div>
-  <div class="seat" style="left:280px;top:480px"><div class="seat-box">10</div><div class="leg l"></div><div class="leg r"></div></div>
-</div>
+      <!-- Row 3 -->
+      <div class="seat">
+        <div class="seat-inner">
+          <span class="seat-label">5L</span>
+        </div>
+      </div>
+      <div class="seat">
+        <div class="seat-inner">
+          <span class="seat-label">6L</span>
+        </div>
+      </div>
+      <div class="seat">
+        <div class="seat-inner">
+          <span class="seat-label">7L</span>
+        </div>
+      </div>
+
+      <!-- Row 4 -->
+      <div class="seat">
+        <div class="seat-inner">
+          <span class="seat-label">8L</span>
+        </div>
+      </div>
+      <div class="seat">
+        <div class="seat-inner">
+          <span class="seat-label">9L</span>
+        </div>
+      </div>
+      <div class="seat">
+        <div class="seat-inner">
+          <span class="seat-label">10L</span>
+        </div>
+      </div>
+
+      <!-- Row 5 -->
+      <div class="seat">
+        <div class="seat-inner">
+          <span class="seat-label">11L</span>
+        </div>
+      </div>
+      <div class="seat">
+        <div class="seat-inner">
+          <span class="seat-label">12L</span>
+        </div>
+      </div>
+      <div class="seat">
+        <div class="seat-inner">
+          <span class="seat-label">13L</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
 </body>
 </html>
