@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-[#0B0C10] text-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>HOROLOGIX — Time. Style. Rewards.</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#0B0C10',
+                        charcoal: '#1F2833',
+                        slateDark: '#12161D',
+                        gold: '#D4AF37',
+                        goldHover: '#B59328',
+                        metallicSilver: '#C0C0C0',
+                        lightGray: '#C5C6C7',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Cinzel', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* Custom scrollbar and glassmorphism styling */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0B0C10; }
+        ::-webkit-scrollbar-thumb { background: #1F2833; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #D4AF37; }
+
+        .glass-card {
+            background: rgba(31, 40, 51, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(212, 175, 55, 0.15);
+        }
+        .glass-card-hover:hover {
+            border-color: rgba(212, 175, 55, 0.4);
+            transform: translateY(-2px);
+            transition: all 0.25s ease;
+        }
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #FFF1B0 0%, #D4AF37 50%, #9A7B1C 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .gold-border-glow {
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+        }
+        .gold-btn {
+            background: linear-gradient(135deg, #D4AF37 0%, #AA820A 100%);
+            color: #0B0C10;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        .gold-btn:hover {
+            background: linear-gradient(135deg, #E5C148 0%, #C09511 100%);
+            box-shadow: 0 0 12px rgba(212, 175, 55, 0.4);
+        }
+    </style>
+</head>
+<body class="h-full bg-[#0B0C10] font-sans text-gray-200 antialiased flex flex-col pb-24 md:pb-6">
+
+    <!-- Top Header -->
+    <header class="sticky top-0 z-40 bg-[#0B0C10]/90 backdrop-blur-md border-b border-gold/20 px-4 py-3">
+        <div class="max-w-6xl mx-auto flex items-center justify-between">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="switchTab('home')">
+                <div class="w-9 h-9 rounded-full border border-gold flex items-center justify-center bg-charcoal">
+                    <i class="fa-solid fa-clock text-gold text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-serif font-bold text-xl tracking-wider text-white flex items-center gap-1.5">
+                        HOROLOGIX <span class="text-[9px] px-1.5 py-0.5 rounded bg-gold/20 text-gold border border-gold/30 font-sans tracking-normal">LUXURY</span>
+                    </h1>
+                </div>
+            </div>
+
+            <!-- Header Quick Stats & Admin Switch -->
+            <div class="flex items-center space-x-3">
+                <button style="display:none" onclick="toggleAdminView()" id="adminSwitchBtn" class="px-2.5 py-1 text-xs rounded-full border border-gold/40 bg-gold/10 text-gold hover:bg-gold hover:text-obsidian font-medium transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-user-gear"></i>
+                    <span id="adminBtnText" class="hidden sm:inline">Admin Mode</span>
+                </button>
+
+                <!-- Notification Bell -->
+                <button onclick="openModal('notificationsModal')" class="relative p-2 text-gray-300 hover:text-gold transition">
+                    <i class="fa-solid fa-bell text-lg"></i>
+                    <span id="notifBadge" class="absolute top-1 right-1 w-2.5 h-2.5 bg-gold rounded-full animate-ping"></span>
+                    <span class="absolute top-1 right-1 w-2.5 h-2.5 bg-gold rounded-full"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Toast Notification Banner -->
+    <div id="toast" class="fixed top-16 right-4 z-50 transform translate-x-full transition-transform duration-300 ease-in-out max-w-sm w-full bg-charcoal border border-gold/40 text-white p-3.5 rounded-xl shadow-2xl flex items-center gap-3">
+        <div id="toastIcon" class="text-gold text-xl"><i class="fa-solid fa-circle-check"></i></div>
+        <div class="text-xs">
+            <div id="toastTitle" class="font-bold text-gold">Notification</div>
+            <div id="toastMessage" class="text-gray-300">Action completed successfully.</div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-1 max-w-6xl w-full mx-auto px-4 pt-4">
+
+        <!-- TAB 1: HOME -->
+        <section id="tab-home" class="space-y-6">
+            <!-- Hero Banner -->
+            <div class="relative rounded-2xl overflow-hidden glass-card p-6 md:p-10 border border-gold/30 bg-gradient-to-r from-obsidian via-charcoal to-obsidian">
+                <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-gold/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="relative z-10 max-w-xl">
+                    <span class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-gold/20 text-gold border border-gold/30 mb-3 tracking-wide">
+                        ROYAL HOROLOGY & REWARDS
+                    </span>
+                    <h2 class="text-3xl md:text-5xl font-serif font-bold text-white leading-tight mb-3">
+                        TIME. STYLE. <br><span class="gold-gradient-text">REWARDS.</span>
+                    </h2>
+                    <p class="text-xs md:text-sm text-gray-300 mb-6 leading-relaxed">
+                        Discover authentic luxury timepieces from KSh 800 to KSh 10,000. Earn verified promotional reward points with every interaction and redeem exclusive luxury vouchers.
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="switchTab('watches')" class="gold-btn px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider flex items-center gap-2">
+                            <i class="fa-solid fa-watch font-bold"></i> Shop Timepieces
+                        </button>
+                        <button onclick="switchTab('rewards')" class="px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider border border-gold/40 text-gold hover:bg-gold/10 transition">
+                            View Rewards
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Campaign Countdown & Integrity Notice -->
+            <div class="glass-card rounded-xl p-4 border border-gold/20 flex flex-col md:flex-row items-center justify-between gap-4 bg-slateDark/80">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-gold/10 border border-gold/30 flex items-center justify-center text-gold">
+                        <i class="fa-solid fa-hourglass-half text-lg"></i>
+                    </div>
+                    <div>
+                        <div class="text-xs text-gray-400 uppercase font-medium tracking-wider">Current Promotional Campaign</div>
+                        <div id="campaignTimer" class="font-mono text-sm md:text-base text-gold font-bold">Loading timer...</div>
+                    </div>
+                </div>
+                <div class="text-right text-xs text-gray-400 flex items-center gap-2 bg-charcoal/50 px-3 py-1.5 rounded-lg border border-white/5">
+                    <i class="fa-solid fa-shield-halved text-gold"></i>
+                    <span>Promotional Loyalty Points • 100% Non-Investment Platform</span>
+                </div>
+            </div>
+
+            <!-- Daily Code Quick Spotlight -->
+            <div class="glass-card rounded-2xl p-5 border border-gold/30 relative overflow-hidden">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <h3 class="text-sm font-bold text-white uppercase tracking-wider">Today's Promotional Code</h3>
+                        </div>
+                        <p class="text-xs text-gray-400">Claim your daily randomized points reward (1 to 40 pts).</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div id="homeActiveCode" class="font-mono font-bold text-lg text-gold bg-obsidian px-4 py-2 rounded-xl border border-gold/30 tracking-widest select-all">
+                            SHARED IN OFFICIAL WHATSAPP GROUP
+                        </div>
+                        <button onclick="switchTab('wallet'); focusDailyCode();" class="gold-btn px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap">
+                            Claim Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Watch Tier Overview Cards -->
+            <div class="space-y-3">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-serif text-lg font-bold text-white">Curated Collections</h3>
+                    <span class="text-xs text-gold cursor-pointer hover:underline" onclick="switchTab('watches')">Explore All Tiers &rarr;</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div onclick="filterByTier('BASIC')" class="glass-card glass-card-hover rounded-xl p-4 cursor-pointer text-center border border-white/10">
+                        <div class="text-xs text-gray-400 uppercase tracking-widest font-semibold">BASIC TIER</div>
+                        <div class="text-gold font-bold my-1">KSh 800 - 1,999</div>
+                        <div class="text-[10px] text-gray-400">Entry Elegance</div>
+                    </div>
+                    <div onclick="filterByTier('CLASSIC')" class="glass-card glass-card-hover rounded-xl p-4 cursor-pointer text-center border border-white/10">
+                        <div class="text-xs text-gray-400 uppercase tracking-widest font-semibold">CLASSIC TIER</div>
+                        <div class="text-gold font-bold my-1">KSh 2,000 - 4,999</div>
+                        <div class="text-[10px] text-gray-400">Everyday Prestige</div>
+                    </div>
+                    <div onclick="filterByTier('PREMIUM')" class="glass-card glass-card-hover rounded-xl p-4 cursor-pointer text-center border border-white/10">
+                        <div class="text-xs text-gold uppercase tracking-widest font-semibold">PREMIUM TIER</div>
+                        <div class="text-gold font-bold my-1">KSh 5,000 - 7,999</div>
+                        <div class="text-[10px] text-gray-400">Precision Craft</div>
+                    </div>
+                    <div onclick="filterByTier('ELITE')" class="glass-card glass-card-hover rounded-xl p-4 cursor-pointer text-center border border-gold/40 bg-gold/5">
+                        <div class="text-xs text-gold uppercase tracking-widest font-bold">ELITE TIER</div>
+                        <div class="text-gold font-bold my-1">KSh 8,000 - 10,000</div>
+                        <div class="text-[10px] text-gray-300">Grand Masterpiece</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Watches Section -->
+            <div class="space-y-3">
+                <h3 class="font-serif text-lg font-bold text-white">Featured Timepieces</h3>
+                <div id="homeFeaturedWatches" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    <!-- Dynamic Featured Watches inserted by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: WATCHES CATALOGUE -->
+        <section id="tab-watches" class="hidden space-y-5">
+            <!-- Filter & Search Controls -->
+            <div class="glass-card p-4 rounded-xl space-y-3 border border-gold/20">
+                <div class="flex flex-col md:flex-row gap-3">
+                    <div class="relative flex-1">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-gray-400"></i>
+                        <input type="text" id="watchSearchInput" onkeyup="filterCatalogue()" placeholder="Search watches by name or brand..." class="w-full bg-obsidian text-white pl-10 pr-4 py-2 rounded-xl text-xs border border-white/10 focus:border-gold focus:outline-none">
+                    </div>
+                    <div class="flex gap-2 overflow-x-auto pb-1 md:pb-0">
+                        <select id="tierFilter" onchange="filterCatalogue()" class="bg-obsidian text-xs text-gray-300 px-3 py-2 rounded-xl border border-white/10 focus:border-gold outline-none">
+                            <option value="ALL">All Tiers</option>
+                            <option value="BASIC">BASIC (KSh 800 - 1,999)</option>
+                            <option value="CLASSIC">CLASSIC (KSh 2,000 - 4,999)</option>
+                            <option value="PREMIUM">PREMIUM (KSh 5,000 - 7,999)</option>
+                            <option value="ELITE">ELITE (KSh 8,000 - 10,000)</option>
+                        </select>
+                        <select id="genderFilter" onchange="filterCatalogue()" class="bg-obsidian text-xs text-gray-300 px-3 py-2 rounded-xl border border-white/10 focus:border-gold outline-none">
+                            <option value="ALL">All Genders</option>
+                            <option value="Men">Men's</option>
+                            <option value="Women">Women's</option>
+                            <option value="Unisex">Unisex</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Grid -->
+            <div id="watchesCatalogueGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <!-- Dynamically Populated Products -->
+            </div>
+        </section>
+
+        <!-- TAB 3: REWARDS -->
+        <section id="tab-rewards" class="hidden space-y-5">
+            <div class="glass-card rounded-2xl p-5 border border-gold/30 bg-gradient-to-r from-charcoal to-obsidian flex flex-col md:flex-row items-center justify-between gap-4">
+                <div>
+                    <span class="text-[10px] font-bold text-gold uppercase tracking-widest">Points Redemption Catalogue</span>
+                    <h2 class="font-serif text-2xl font-bold text-white">Redeem Your Loyalty Rewards</h2>
+                    <p class="text-xs text-gray-300 mt-1">Exchange your accumulated promotional points for genuine product discounts and vouchers.</p>
+                </div>
+                <div class="bg-obsidian px-5 py-3 rounded-xl border border-gold/30 text-center min-w-[160px]">
+                    <div class="text-[10px] text-gray-400 uppercase font-semibold">Your Balance</div>
+                    <div id="rewardsTabPointBalance" class="text-xl font-bold text-gold">1,284 pts</div>
+                </div>
+            </div>
+
+            <!-- Rewards Catalogue Grid -->
+            <div id="rewardsCatalogueGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                <!-- Dynamic Rewards Items -->
+            </div>
+        </section>
+
+        <!-- TAB 4: WALLET -->
+        <section id="tab-wallet" class="hidden space-y-6">
+            <!-- Dual Wallet Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- CASH WALLET -->
+                <div class="glass-card rounded-2xl p-5 border border-emerald-500/30 bg-slateDark relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span class="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest">REAL MONETARY WALLET</span>
+                            <h3 class="text-lg font-serif font-bold text-white">Cash Balance</h3>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
+                            <i class="fa-solid fa-money-bill-wave"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold text-white mb-4">
+                        KSh <span id="cashWalletBalance">0.00</span>
+                    </div>
+                    <button onclick="openModal('mpesaTopupModal')" class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs tracking-wider uppercase transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-mobile-screen"></i> M-Pesa Instant Deposit
+                    </button>
+                </div>
+
+                <!-- POINTS WALLET -->
+                <div class="glass-card rounded-2xl p-5 border border-gold/40 bg-slateDark relative overflow-hidden">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <span class="text-[10px] font-semibold text-gold uppercase tracking-widest">PROMOTIONAL LOYALTY WALLET</span>
+                            <h3 class="text-lg font-serif font-bold text-white">Reward Points</h3>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-gold/10 border border-gold/30 flex items-center justify-center text-gold">
+                            <i class="fa-solid fa-coins"></i>
+                        </div>
+                    </div>
+                    <div class="text-3xl font-bold text-gold mb-4">
+                        <span id="pointsWalletBalance">1,284</span> <span class="text-xs text-gray-400 font-normal">pts</span>
+                    </div>
+                    <div class="text-[10px] text-gray-400 bg-obsidian/60 p-2 rounded-lg border border-gold/10">
+                        Points are non-cash promotional incentives earned via store engagement & codes.
+                    </div>
+                </div>
+            </div>
+
+            <!-- DAILY REWARD CODE CLAIM CARD -->
+            <div id="dailyCodeSection" class="glass-card rounded-2xl p-5 border border-gold/30">
+                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 mb-4">
+                    <div>
+                        <h3 class="font-serif font-bold text-white text-base">Claim Daily Reward Code</h3>
+                        <p class="text-xs text-gray-300">Enter today's active promo code to drop 1-40 reward points instantly.</p>
+                    </div>
+                    <div class="text-xs bg-gold/10 text-gold px-3 py-1 rounded-full border border-gold/20 self-start sm:self-auto">
+                        1 Code Per Account / Day
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <input type="text" id="dailyCodeInput" placeholder="Enter Code e.g. SHARED IN OFFICIAL WHATSAPP GROUP" class="flex-1 bg-obsidian uppercase tracking-wider text-white px-4 py-3 rounded-xl border border-white/20 text-xs font-mono focus:border-gold focus:outline-none">
+                    <button onclick="claimDailyCode()" class="gold-btn px-6 py-3 rounded-xl text-xs uppercase tracking-wider font-bold">
+                        Redeem
+                    </button>
+                </div>
+                <div id="codeClaimStatus" class="mt-3 text-xs hidden"></div>
+            </div>
+
+            <!-- IMMUTABLE TRANSACTION LEDGER -->
+            <div class="glass-card rounded-2xl p-5 border border-gold/20">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-serif font-bold text-white text-base">Transaction Ledger History</h3>
+                    <span class="text-[10px] text-gray-400 font-mono">Secured & Immutable</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="text-[10px] uppercase text-gray-400 bg-obsidian/80 border-b border-white/10">
+                            <tr>
+                                <th class="p-3">Type</th>
+                                <th class="p-3">Description</th>
+                                <th class="p-3">Amount</th>
+                                <th class="p-3">Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ledgerTableBody" class="divide-y divide-white/5">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 5: PROFILE -->
+        <section id="tab-profile" class="hidden space-y-6">
+            <!-- User Profile Card -->
+            <div class="glass-card rounded-2xl p-6 border border-gold/30 flex flex-col sm:flex-row items-center gap-5">
+                <div class="w-20 h-20 rounded-full border-2 border-gold bg-charcoal p-1 flex items-center justify-center">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200" alt="Avatar" class="w-full h-full object-cover rounded-full">
+                </div>
+                <div class="text-center sm:text-left flex-1">
+                    <div class="flex items-center justify-center sm:justify-start gap-2">
+                        <h2 id="userNameDisplay" class="font-serif text-xl font-bold text-white">Alexander Vance</h2>
+                        <span class="text-[10px] bg-gold/20 text-gold px-2 py-0.5 rounded border border-gold/30">ELITE MEMBER</span>
+                    </div>
+                    <p id="userPhoneDisplay" class="text-xs text-gray-400 mt-0.5">+254 712 345 678 • alexander@horologix.co</p>
+                    <div class="mt-3 flex flex-wrap gap-2 justify-center sm:justify-start">
+                        <span class="text-xs bg-obsidian px-3 py-1 rounded-lg border border-white/10 text-gray-300">
+                            Orders: <span id="userOrdersCount" class="text-gold font-bold">2</span>
+                        </span>
+                        <span class="text-xs bg-obsidian px-3 py-1 rounded-lg border border-white/10 text-gray-300">
+                            Referrals: <span class="text-gold font-bold">3 Users</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Referral Link Generator Card -->
+            <div class="glass-card rounded-2xl p-5 border border-gold/20">
+                <h3 class="font-serif font-bold text-white text-sm mb-1">Your Promotional Referral Link</h3>
+                <p class="text-xs text-gray-300 mb-3">Invite fellow watch enthusiasts to earn 15 bonus reward points upon their first order.</p>
+                <div class="flex gap-2">
+                    <input type="text" readonly id="referralLinkInput" value="https://horologix.co/join?ref=ALEX789" class="flex-1 bg-obsidian text-xs text-gray-300 px-3 py-2.5 rounded-xl border border-white/10 outline-none">
+                    <button onclick="copyReferralLink()" class="gold-btn px-4 py-2.5 rounded-xl text-xs font-bold">Copy Link</button>
+                </div>
+            </div>
+
+            <!-- User Order History -->
+            <div class="glass-card rounded-2xl p-5 border border-gold/20">
+                <h3 class="font-serif font-bold text-white text-sm mb-3">Recent Watch Orders</h3>
+                <div id="userOrdersList" class="space-y-3">
+                    <!-- Dynamic user orders -->
+                </div>
+            </div>
+
+            <!-- Trust & Transparency Navigation -->
+            <div class="glass-card rounded-2xl p-4 border border-gold/20 space-y-2">
+                <h3 class="text-xs font-bold text-gold uppercase tracking-wider mb-2">Platform Policies & Transparency</h3>
+                <button onclick="openPolicyModal('howItWorks')" class="w-full text-left p-2.5 rounded-xl bg-obsidian/50 hover:bg-obsidian border border-white/5 text-xs text-gray-300 flex justify-between items-center">
+                    <span><i class="fa-solid fa-circle-info text-gold mr-2"></i> How HOROLOGIX Works</span>
+                    <i class="fa-solid fa-chevron-right text-gray-500"></i>
+                </button>
+                <button onclick="openPolicyModal('rewardTerms')" class="w-full text-left p-2.5 rounded-xl bg-obsidian/50 hover:bg-obsidian border border-white/5 text-xs text-gray-300 flex justify-between items-center">
+                    <span><i class="fa-solid fa-scroll text-gold mr-2"></i> Promotional Reward Terms & Non-Investment Disclosure</span>
+                    <i class="fa-solid fa-chevron-right text-gray-500"></i>
+                </button>
+                <button onclick="openPolicyModal('antiAbuse')" class="w-full text-left p-2.5 rounded-xl bg-obsidian/50 hover:bg-obsidian border border-white/5 text-xs text-gray-300 flex justify-between items-center">
+                    <span><i class="fa-solid fa-shield text-gold mr-2"></i> Security & Anti-Abuse Rules</span>
+                    <i class="fa-solid fa-chevron-right text-gray-500"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- TAB 6: ADMIN DASHBOARD (Toggleable) -->
+        <section id="tab-admin" style="display:none" class="hidden space-y-6">
+            <!-- Admin Header Title -->
+            <div class="flex justify-between items-center bg-gold/10 p-4 rounded-xl border border-gold/30">
+                <div>
+                    <h2 class="font-serif font-bold text-white text-xl flex items-center gap-2">
+                        <i class="fa-solid fa-sliders text-gold"></i> HOROLOGIX Executive Control Panel
+                    </h2>
+                    <p class="text-xs text-gray-300">Manage products, inspect code redemptions, and control campaign dates.</p>
+                </div>
+                <button style="display:none" onclick="toggleAdminView()" class="px-3 py-1.5 rounded-lg bg-obsidian border border-white/20 text-xs text-gray-300 hover:text-white">
+                    Exit Admin
+                </button>
+            </div>
+
+            <!-- KPI Summary Cards -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div class="glass-card p-4 rounded-xl border border-gold/20">
+                    <div class="text-[10px] text-gray-400 uppercase font-semibold">Total Revenue</div>
+                    <div class="text-xl font-bold text-gold mt-1">KSh 148,500</div>
+                    <div class="text-[10px] text-emerald-400 mt-1"><i class="fa-solid fa-arrow-trend-up"></i> Verified M-Pesa</div>
+                </div>
+                <div class="glass-card p-4 rounded-xl border border-gold/20">
+                    <div class="text-[10px] text-gray-400 uppercase font-semibold">Watches Sold</div>
+                    <div class="text-xl font-bold text-white mt-1">28 Units</div>
+                    <div class="text-[10px] text-gray-400 mt-1">Across 4 Tiers</div>
+                </div>
+                <div class="glass-card p-4 rounded-xl border border-gold/20">
+                    <div class="text-[10px] text-gray-400 uppercase font-semibold">Code Claims Today</div>
+                    <div id="adminTodayClaims" class="text-xl font-bold text-gold mt-1">1 Claims</div>
+                    <div class="text-[10px] text-gray-400 mt-1">Weighted Drop Engine</div>
+                </div>
+                <div class="glass-card p-4 rounded-xl border border-gold/20">
+                    <div class="text-[10px] text-gray-400 uppercase font-semibold">Points Distributed</div>
+                    <div id="adminTotalPoints" class="text-xl font-bold text-white mt-1">12,450 pts</div>
+                    <div class="text-[10px] text-gold mt-1">Promotional Ledger</div>
+                </div>
+            </div>
+
+            <!-- Admin Action 1: Daily Promo Code Generator & Campaign Control -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="glass-card p-5 rounded-2xl border border-gold/30">
+                    <h3 class="font-serif font-bold text-white text-sm mb-2">Daily Reward Code Management</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-[10px] text-gray-400 uppercase">Current Daily Active Code</label>
+                            <input type="text" id="adminActiveCodeInput" value="SHARED IN OFFICIAL WHATSAPP GROUP" class="w-full bg-obsidian font-mono text-gold font-bold px-3 py-2 rounded-xl border border-white/10 text-xs uppercase">
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="adminGenerateNewCode()" class="flex-1 gold-btn py-2 rounded-xl text-xs uppercase font-bold">
+                                Generate Random Code
+                            </button>
+                            <button onclick="adminSaveCode()" class="px-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold">
+                                Save Code
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card p-5 rounded-2xl border border-gold/30">
+                    <h3 class="font-serif font-bold text-white text-sm mb-2">3-Month Campaign Date Config</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-[10px] text-gray-400 uppercase">Campaign Expiration Date</label>
+                            <input type="date" id="adminCampaignDate" class="w-full bg-obsidian text-white px-3 py-2 rounded-xl border border-white/10 text-xs">
+                        </div>
+                        <button onclick="adminSaveCampaignDate()" class="w-full gold-btn py-2 rounded-xl text-xs uppercase font-bold">
+                            Update Campaign Timer
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin Action 2: Add New Watch Product -->
+            <div class="glass-card p-5 rounded-2xl border border-gold/20">
+                <h3 class="font-serif font-bold text-white text-sm mb-3">Add New Watch to Catalogue</h3>
+                <form id="addWatchForm" onsubmit="adminAddWatch(event)" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                    <div>
+                        <label class="text-[10px] text-gray-400">Watch Name</label>
+                        <input type="text" id="newWatchName" required placeholder="e.g. Chrono Royal" class="w-full bg-obsidian text-white p-2.5 rounded-xl border border-white/10">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-gray-400">Brand</label>
+                        <input type="text" id="newWatchBrand" required placeholder="e.g. HOROLOGIX Master" class="w-full bg-obsidian text-white p-2.5 rounded-xl border border-white/10">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-gray-400">Price (KSh 800 - 10,000)</label>
+                        <input type="number" id="newWatchPrice" min="800" max="10000" required placeholder="4500" class="w-full bg-obsidian text-white p-2.5 rounded-xl border border-white/10">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-gray-400">Category / Gender</label>
+                        <select id="newWatchGender" class="w-full bg-obsidian text-white p-2.5 rounded-xl border border-white/10">
+                            <option value="Men">Men's</option>
+                            <option value="Women">Women's</option>
+                            <option value="Unisex">Unisex</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-gray-400">Stock Quantity</label>
+                        <input type="number" id="newWatchStock" min="1" value="10" required class="w-full bg-obsidian text-white p-2.5 rounded-xl border border-white/10">
+                    </div>
+                    <div>
+                        <label class="text-[10px] text-gray-400">Watch Image URL</label>
+                        <input type="url" id="newWatchImage" required placeholder="https://images.unsplash.com/..." class="w-full bg-obsidian text-white p-2.5 rounded-xl border border-white/10">
+                    </div>
+                    <div class="sm:col-span-2 md:col-span-3">
+                        <button type="submit" class="w-full gold-btn py-2.5 rounded-xl uppercase font-bold text-xs mt-1">
+                            Publish Timepiece
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FIXED BOTTOM MOBILE NAVIGATION BAR -->
+    <nav class="fixed bottom-0 left-0 right-0 z-40 bg-[#0B0C10]/95 backdrop-blur-md border-t border-gold/20 px-3 py-2">
+        <div class="max-w-md mx-auto flex justify-between items-center">
+            <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center gap-1 text-gold">
+                <i class="fa-solid fa-house text-base"></i>
+                <span class="text-[10px] font-medium tracking-tight">Home</span>
+            </button>
+            <button onclick="switchTab('watches')" id="nav-watches" class="nav-btn flex flex-col items-center gap-1 text-gray-400 hover:text-gold transition">
+                <i class="fa-solid fa-stopwatch text-base"></i>
+                <span class="text-[10px] font-medium tracking-tight">Watches</span>
+            </button>
+            <button onclick="switchTab('rewards')" id="nav-rewards" class="nav-btn flex flex-col items-center gap-1 text-gray-400 hover:text-gold transition">
+                <i class="fa-solid fa-gift text-base"></i>
+                <span class="text-[10px] font-medium tracking-tight">Rewards</span>
+            </button>
+            <button onclick="switchTab('wallet')" id="nav-wallet" class="nav-btn flex flex-col items-center gap-1 text-gray-400 hover:text-gold transition">
+                <i class="fa-solid fa-wallet text-base"></i>
+                <span class="text-[10px] font-medium tracking-tight">Wallet</span>
+            </button>
+            <button onclick="switchTab('profile')" id="nav-profile" class="nav-btn flex flex-col items-center gap-1 text-gray-400 hover:text-gold transition">
+                <i class="fa-solid fa-user text-base"></i>
+                <span class="text-[10px] font-medium tracking-tight">Profile</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- MODAL 1: PRODUCT DETAILS & BUY MODAL -->
+    <div id="productModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card max-w-xl w-full rounded-2xl overflow-hidden border border-gold/40 max-h-[90vh] flex flex-col bg-charcoal">
+            <div class="p-4 border-b border-white/10 flex justify-between items-center">
+                <h3 id="modalWatchTitle" class="font-serif font-bold text-white text-base">Timepiece Details</h3>
+                <button onclick="closeModal('productModal')" class="text-gray-400 hover:text-white p-1 text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-5 overflow-y-auto space-y-4">
+                <div class="relative rounded-xl overflow-hidden h-64 bg-obsidian border border-gold/20 flex items-center justify-center">
+                    <img id="modalWatchImg" src="" alt="Watch Image" class="w-full h-full object-cover">
+                    <span id="modalWatchTierBadge" class="absolute top-3 left-3 text-[10px] font-bold px-2.5 py-1 rounded-full bg-gold text-obsidian uppercase">
+                        TIER
+                    </span>
+                </div>
+                <div class="flex justify-between items-start">
+                    <div>
+                        <div id="modalWatchBrand" class="text-xs text-gold uppercase tracking-wider font-semibold">BRAND</div>
+                        <h2 id="modalWatchName" class="text-xl font-serif font-bold text-white">Watch Name</h2>
+                    </div>
+                    <div class="text-right">
+                        <div id="modalWatchPrice" class="text-2xl font-bold text-gold">KSh 0</div>
+                        <span class="text-[10px] text-emerald-400 font-medium"><i class="fa-solid fa-truck"></i> Free Express Delivery</span>
+                    </div>
+                </div>
+
+                <p id="modalWatchDesc" class="text-xs text-gray-300 leading-relaxed">Detailed specification description.</p>
+
+                <!-- Technical Specs Table -->
+                <div class="bg-obsidian/80 rounded-xl p-3 border border-white/10 space-y-2 text-xs">
+                    <div class="font-bold text-gold text-[10px] uppercase tracking-widest border-b border-white/10 pb-1">Technical Specifications</div>
+                    <div class="grid grid-cols-2 gap-2 text-[11px]">
+                        <div><span class="text-gray-400">Movement:</span> <span id="modalSpecMovement" class="text-gray-200">Automatic</span></div>
+                        <div><span class="text-gray-400">Glass:</span> <span class="text-gray-200">Sapphire Crystal</span></div>
+                        <div><span class="text-gray-400">Water Resistance:</span> <span class="text-gray-200">50m / 5 ATM</span></div>
+                        <div><span class="text-gray-400">Warranty:</span> <span class="text-gray-200">2-Year HOROLOGIX</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-white/10 bg-obsidian flex gap-3">
+                <button onclick="triggerPurchaseWithMpesa()" class="flex-1 gold-btn py-3 rounded-xl uppercase tracking-wider text-xs font-bold flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-bolt"></i> Buy Now via M-Pesa
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: M-PESA STK PUSH SIMULATOR -->
+    <div id="mpesaTopupModal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card max-w-sm w-full rounded-2xl p-5 border border-emerald-500/40 bg-charcoal space-y-4">
+            <div class="flex justify-between items-center border-b border-white/10 pb-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-full bg-emerald-600 flex items-center justify-center text-white text-xs font-bold">M</div>
+                    <h3 class="font-bold text-white text-sm">M-Pesa Express Payment</h3>
+                </div>
+                <button onclick="closeModal('mpesaTopupModal')" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            
+            <p class="text-xs text-gray-300">Enter your Safaricom M-Pesa number to receive an instant STK prompt on your device.</p>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="text-[10px] text-gray-400 uppercase">Phone Number</label>
+                    <input type="text" id="mpesaPhone" value="254712345678" class="w-full bg-obsidian text-white p-2.5 rounded-xl border border-white/10 text-xs font-mono">
+                </div>
+                <div>
+                    <label class="text-[10px] text-gray-400 uppercase">Amount (KSh)</label>
+                    <input type="number" id="mpesaAmount" value="2500" min="100" class="w-full bg-obsidian text-white p-2.5 rounded-xl border border-white/10 text-xs font-mono">
+                </div>
+            </div>
+
+            <button onclick="executeMpesaPayment()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold tracking-wider uppercase transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-mobile-screen"></i> Send STK Prompt
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 3: DAILY CODE CELEBRATION DROP -->
+    <div id="rewardCelebrationModal" class="fixed inset-0 z-50 hidden bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="glass-card max-w-sm w-full rounded-2xl p-6 border border-gold text-center space-y-4 bg-charcoal relative overflow-hidden">
+            <div class="w-16 h-16 rounded-full bg-gold/20 border-2 border-gold flex items-center justify-center text-gold text-2xl mx-auto animate-bounce">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <h3 class="font-serif text-xl font-bold text-white">Daily Reward Unlocked!</h3>
+            <p class="text-xs text-gray-300">Your daily promotional code drop has been verified and safely appended to your ledger.</p>
+            
+            <div class="bg-obsidian p-4 rounded-xl border border-gold/30">
+                <div class="text-[10px] text-gray-400 uppercase">Points Awarded</div>
+                <div id="awardedPointsValue" class="text-4xl font-extrabold text-gold my-1">+0 pts</div>
+                <div id="awardedTimestamp" class="text-[10px] text-gray-400 font-mono">2026-10-08 09:00:00</div>
+            </div>
+
+            <button onclick="closeModal('rewardCelebrationModal'); switchTab('wallet')" class="w-full gold-btn py-2.5 rounded-xl text-xs font-bold uppercase">
+                View Updated Ledger
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL 4: POLICY & TRANSPARENCY DRAWER -->
+    <div id="policyModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card max-w-lg w-full rounded-2xl p-5 border border-gold/30 bg-charcoal space-y-3 max-h-[85vh] flex flex-col">
+            <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                <h3 id="policyModalTitle" class="font-serif font-bold text-gold text-sm">Platform Terms</h3>
+                <button onclick="closeModal('policyModal')" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="policyModalBody" class="text-xs text-gray-300 space-y-3 overflow-y-auto pr-1 leading-relaxed">
+                <!-- Dynamic Policy Content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 5: NOTIFICATIONS LIST MODAL -->
+    <div id="notificationsModal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="glass-card max-w-sm w-full rounded-2xl p-5 border border-gold/30 bg-charcoal space-y-3">
+            <div class="flex justify-between items-center border-b border-white/10 pb-2">
+                <h3 class="font-serif font-bold text-white text-sm">Notifications</h3>
+                <button onclick="closeModal('notificationsModal')" class="text-gray-400 hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="space-y-2 max-h-60 overflow-y-auto text-xs">
+                <div class="p-2.5 rounded-xl bg-obsidian border border-white/5">
+                    <div class="text-gold font-bold text-[11px]">Today's Daily Code Ready</div>
+                    <p class="text-[10px] text-gray-400">Code SHARED IN OFFICIAL WHATSAPP GROUP is active for redemption.</p>
+                </div>
+                <div class="p-2.5 rounded-xl bg-obsidian border border-white/5">
+                    <div class="text-emerald-400 font-bold text-[11px]">Welcome to HOROLOGIX</div>
+                    <p class="text-[10px] text-gray-400">Enjoy authentic luxury timepieces and non-cash promotional rewards.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ==========================================================================
+           1. CORE STATE MANAGEMENT & INITIAL DATA STRUCTURES
+           ========================================================================== */
+        
+        // Initial Default Watches Catalogue (KSh 800 - KSh 10,000)
+        const DEFAULT_WATCHES = [
+            {
+                id: 'w1',
+                name: 'Chrono Minimalist',
+                brand: 'HOROLOGIX Basic',
+                tier: 'BASIC',
+                price: 1200,
+                gender: 'Unisex',
+                stock: 14,
+                movement: 'Quartz Precision',
+                image: 'https://images.unsplash.com/photo-1524805444758-089113d48a6d?auto=format&fit=crop&q=80&w=600',
+                description: 'Sleek ultra-thin profile with genuine leather strap and matte black stainless steel casing.'
+            },
+            {
+                id: 'w2',
+                name: 'Executive Silver Automatic',
+                brand: 'HOROLOGIX Classic',
+                tier: 'CLASSIC',
+                price: 3500,
+                gender: 'Men',
+                stock: 8,
+                movement: 'Japanese Automatic',
+                image: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&q=80&w=600',
+                description: 'Brushed silver dial with exposed skeleton window and scratch-resistant mineral crystal.'
+            },
+            {
+                id: 'w3',
+                name: 'Royal Oak Brushed Gold',
+                brand: 'HOROLOGIX Premium',
+                tier: 'PREMIUM',
+                price: 6800,
+                gender: 'Men',
+                stock: 5,
+                movement: 'Swiss Mechanical',
+                image: 'https://images.unsplash.com/photo-1547996160-81dfa63595aa?auto=format&fit=crop&q=80&w=600',
+                description: 'Luxury brushed gold finish with sapphire glass and luminous hour indices.'
+            },
+            {
+                id: 'w4',
+                name: 'Grand Tourbillon Obsidian Elite',
+                brand: 'HOROLOGIX Masterpiece',
+                tier: 'ELITE',
+                price: 9500,
+                gender: 'Men',
+                stock: 3,
+                movement: 'Precision Tourbillon',
+                image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=600',
+                description: 'Flawless obsidian ceramic case with exhibition caseback and 50m water resistance rating.'
+            },
+            {
+                id: 'w5',
+                name: 'Rose Gold Elegance',
+                brand: 'HOROLOGIX Classic',
+                tier: 'CLASSIC',
+                price: 2800,
+                gender: 'Women',
+                stock: 10,
+                movement: 'Quartz Precision',
+                image: 'https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&q=80&w=600',
+                description: 'Elegant mesh band with mother-of-pearl dial accents.'
+            },
+            {
+                id: 'w6',
+                name: 'Nautilus Dark Steel',
+                brand: 'HOROLOGIX Premium',
+                tier: 'PREMIUM',
+                price: 7400,
+                gender: 'Unisex',
+                stock: 6,
+                movement: 'Automatic Self-Winding',
+                image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&q=80&w=600',
+                description: 'Industrial octagonal bezel with textured dial and 2-year manufacturer warranty.'
+            }
+        ];
+
+        // Default Rewards Store Items
+        const DEFAULT_REWARDS = [
+            {
+                id: 'r1',
+                title: 'KSh 500 Watch Voucher',
+                cost: 200,
+                desc: 'Apply at checkout on any Classic or Premium watch order.',
+                icon: 'fa-ticket-simple'
+            },
+            {
+                id: 'r2',
+                title: 'Free Express Shipping',
+                cost: 100,
+                desc: 'Waive delivery fees anywhere across Kenya.',
+                icon: 'fa-truck-fast'
+            },
+            {
+                id: 'r3',
+                title: 'VIP Watch Care Kit',
+                cost: 450,
+                desc: 'Microfiber polishing cloth and leather strap conditioner.',
+                icon: 'fa-box-open'
+            },
+            {
+                id: 'r4',
+                title: 'KSh 2,500 Elite Discount',
+                cost: 800,
+                desc: 'Substantial discount code for Elite tier timepieces.',
+                icon: 'fa-crown'
+            }
+        ];
+
+        // Platform App State with LocalStorage Persistence
+        let appState = {
+            cashWallet: 0,
+            pointsWallet: 1284,
+            activeCode: 'SHARED IN OFFICIAL WHATSAPP GROUP',
+            lastClaimedDate: null,
+            campaignEndDate: new Date(Date.now() + 67 * 24 * 60 * 60 * 1000).toISOString(),
+            ledger: [
+                { id: 'tx1', type: 'Credit', desc: 'Welcome Bonus Reward Points', amount: '+500 pts', time: '2026-10-01 10:00' },
+                { id: 'tx2', type: 'Credit', desc: 'Daily Promotional Code Claim', amount: '+12 pts', time: '2026-10-07 09:15' },
+                { id: 'tx3', type: 'Debit', desc: 'Redeemed Free Express Shipping Voucher', amount: '-100 pts', time: '2026-10-07 14:20' }
+            ],
+            orders: [
+                { id: 'ORD-9842', watchName: 'Executive Silver Automatic', price: 3500, date: '2026-10-02', status: 'Delivered' }
+            ],
+            watches: DEFAULT_WATCHES,
+            selectedWatchForPurchase: null,
+            isAdmin: false
+        };
+
+        /* ==========================================================================
+           2. WEIGHTED PROBABILITY DAILY CODE DROP ENGINE (Server-Like Logic)
+           ========================================================================== */
+
+        /**
+         * Secure server-like probability drop logic
+         * 1–5 pts -> 35%
+         * 6–10 pts -> 30%
+         * 11–15 pts -> 20%
+         * 16–20 pts -> 13%
+         * 21–30 pts -> 1.5%
+         * 31–40 pts -> 0.5%
+         */
+        function calculateWeightedPoints() {
+            const rand = Math.random() * 100; // 0 to 100
+            let points = 5;
+
+            if (rand < 35) {
+                // 1-5 points (35%)
+                points = Math.floor(Math.random() * 5) + 1;
+            } else if (rand < 65) {
+                // 6-10 points (30%)
+                points = Math.floor(Math.random() * 5) + 6;
+            } else if (rand < 85) {
+                // 11-15 points (20%)
+                points = Math.floor(Math.random() * 5) + 11;
+            } else if (rand < 98) {
+                // 16-20 points (13%)
+                points = Math.floor(Math.random() * 5) + 16;
+            } else if (rand < 99.5) {
+                // 21-30 points (1.5% - Rare)
+                points = Math.floor(Math.random() * 10) + 21;
+            } else {
+                // 31-40 points (0.5% - Ultra Rare)
+                points = Math.floor(Math.random() * 10) + 31;
+            }
+            return points;
+        }
+
+        // Daily Code Claim Handler
+        function claimDailyCode() {
+            const inputCode = document.getElementById('dailyCodeInput').value.trim().toUpperCase();
+            const statusDiv = document.getElementById('codeClaimStatus');
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            if (!inputCode) {
+                showToast('Warning', 'Please enter a valid promotional code.', 'fa-triangle-exclamation');
+                return;
+            }
+
+            if (inputCode !== "") {
+                statusDiv.classList.remove('hidden', 'text-emerald-400');
+                statusDiv.classList.add('text-rose-400');
+                statusDiv.innerText = 'Invalid daily promotional code. Please verify today\'s active code.';
+                return;
+            }
+
+            // Anti-Abuse Check: One Redemption Per Account Per Day
+            if (appState.lastClaimedDate === todayStr) {
+                statusDiv.classList.remove('hidden', 'text-emerald-400');
+                statusDiv.classList.add('text-rose-400');
+                statusDiv.innerText = '✓ Today\'s promotional reward has already been claimed for this account.';
+                showToast('Limit Reached', 'You have already redeemed today\'s reward code.', 'fa-circle-info');
+                return;
+            }
+
+            // Execute Secure Reward Drop
+            const awardedPoints = calculateWeightedPoints();
+            const nowStamp = new Date().toLocaleString('sv-SE');
+
+            // Update State
+            appState.pointsWallet += awardedPoints;
+            appState.lastClaimedDate = todayStr;
+
+            // Append Immutable Ledger Record
+            appState.ledger.unshift({
+                id: 'tx-' + Date.now().toString().slice(-6),
+                type: 'Credit',
+                desc: `Daily Promotional Code Claim (${inputCode})`,
+                amount: `+${awardedPoints} pts`,
+                time: nowStamp
+            });
+
+            saveState();
+            updateUI();
+
+            // Display Celebration Modal
+            document.getElementById('awardedPointsValue').innerText = `+${awardedPoints} pts`;
+            document.getElementById('awardedTimestamp').innerText = `${todayStr} ${nowStamp.split(' ')[1]}`;
+            openModal('rewardCelebrationModal');
+
+            statusDiv.classList.remove('hidden', 'text-rose-400');
+            statusDiv.classList.add('text-emerald-400');
+            statusDiv.innerText = '✓ Code successfully redeemed!';
+            document.getElementById('dailyCodeInput').value = '';
+        }
+
+        /* ==========================================================================
+           3. UI RENDERERS & TAB NAVIGATION
+           ========================================================================== */
+
+        function switchTab(tabId) {
+            const tabs = ['home', 'watches', 'rewards', 'wallet', 'profile', 'admin'];
+            tabs.forEach(t => {
+                const el = document.getElementById(`tab-${t}`);
+                if (el) el.classList.add('hidden');
+                
+                const navBtn = document.getElementById(`nav-${t}`);
+                if (navBtn) {
+                    navBtn.classList.remove('text-gold');
+                    navBtn.classList.add('text-gray-400');
+                }
+            });
+
+            const activeTab = document.getElementById(`tab-${tabId}`);
+            if (activeTab) activeTab.classList.remove('hidden');
+
+            const activeNavBtn = document.getElementById(`nav-${tabId}`);
+            if (activeNavBtn) {
+                activeNavBtn.classList.remove('text-gray-400');
+                activeNavBtn.classList.add('text-gold');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function focusDailyCode() {
+            const input = document.getElementById('dailyCodeInput');
+            if (input) input.focus();
+        }
+
+        function updateUI() {
+            // Update Balances
+            document.getElementById('cashWalletBalance').innerText = appState.cashWallet.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            document.getElementById('pointsWalletBalance').innerText = appState.pointsWallet.toLocaleString();
+            document.getElementById('rewardsTabPointBalance').innerText = `${appState.pointsWallet.toLocaleString()} pts`;
+            
+            // Home Spotlight Code
+            document.getElementById('homeActiveCode').innerText = "";
+            document.getElementById('adminActiveCodeInput').value = "";
+
+            // Render Ledger
+            renderLedger();
+            // Render Watches Catalogue
+            renderCatalogue();
+            // Render Home Featured Watches
+            renderHomeFeatured();
+            // Render Rewards
+            renderRewards();
+            // Render User Orders
+            renderUserOrders();
+        }
+
+        function renderLedger() {
+            const tbody = document.getElementById('ledgerTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = appState.ledger.map(item => `
+                <tr class="hover:bg-white/5 transition">
+                    <td class="p-3">
+                        <span class="text-[9px] px-2 py-0.5 rounded font-bold uppercase ${item.type === 'Credit' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/20 text-rose-400 border border-rose-500/30'}">
+                            ${item.type}
+                        </span>
+                    </td>
+                    <td class="p-3 text-white font-medium">${item.desc}</td>
+                    <td class="p-3 font-mono font-bold ${item.type === 'Credit' ? 'text-emerald-400' : 'text-rose-400'}">${item.amount}</td>
+                    <td class="p-3 text-gray-400 font-mono text-[10px]">${item.time}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderHomeFeatured() {
+            const container = document.getElementById('homeFeaturedWatches');
+            if (!container) return;
+
+            const featured = appState.watches.slice(0, 3);
+            container.innerHTML = featured.map(watch => `
+                <div onclick="openProductModal('${watch.id}')" class="glass-card glass-card-hover rounded-2xl overflow-hidden cursor-pointer border border-gold/20 flex flex-col justify-between">
+                    <div class="relative h-48 bg-obsidian overflow-hidden">
+                        <img src="${watch.image}" alt="${watch.name}" class="w-full h-full object-cover">
+                        <span class="absolute top-2.5 left-2.5 text-[9px] font-bold px-2 py-0.5 rounded bg-gold text-obsidian uppercase">
+                            ${watch.tier} TIER
+                        </span>
+                    </div>
+                    <div class="p-4 space-y-2">
+                        <div class="text-[10px] text-gold uppercase tracking-wider font-semibold">${watch.brand}</div>
+                        <h4 class="font-serif font-bold text-white text-sm line-clamp-1">${watch.name}</h4>
+                        <div class="flex justify-between items-center pt-2 border-t border-white/10">
+                            <span class="text-gold font-bold text-base">KSh ${watch.price.toLocaleString()}</span>
+                            <span class="text-[10px] text-gray-400 hover:text-white flex items-center gap-1">View <i class="fa-solid fa-arrow-right text-[8px]"></i></span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderCatalogue() {
+            const container = document.getElementById('watchesCatalogueGrid');
+            if (!container) return;
+
+            const search = document.getElementById('watchSearchInput').value.toLowerCase();
+            const tier = document.getElementById('tierFilter').value;
+            const gender = document.getElementById('genderFilter').value;
+
+            const filtered = appState.watches.filter(w => {
+                const matchSearch = w.name.toLowerCase().includes(search) || w.brand.toLowerCase().includes(search);
+                const matchTier = tier === 'ALL' || w.tier === tier;
+                const matchGender = gender === 'ALL' || w.gender === gender;
+                return matchSearch && matchTier && matchGender;
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="col-span-full text-center py-10 text-gray-400 text-xs">No timepieces match your active filter parameters.</div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(watch => `
+                <div class="glass-card rounded-2xl overflow-hidden border border-gold/20 flex flex-col justify-between">
+                    <div class="relative h-52 bg-obsidian overflow-hidden cursor-pointer" onclick="openProductModal('${watch.id}')">
+                        <img src="${watch.image}" alt="${watch.name}" class="w-full h-full object-cover">
+                        <span class="absolute top-2.5 left-2.5 text-[9px] font-bold px-2 py-0.5 rounded bg-gold text-obsidian uppercase">
+                            ${watch.tier}
+                        </span>
+                        <span class="absolute top-2.5 right-2.5 text-[9px] font-semibold px-2 py-0.5 rounded bg-charcoal/80 text-gray-300 border border-white/10">
+                            Stock: ${watch.stock}
+                        </span>
+                    </div>
+                    <div class="p-4 space-y-2">
+                        <div class="text-[10px] text-gold uppercase tracking-wider font-semibold">${watch.brand} • ${watch.gender}</div>
+                        <h4 class="font-serif font-bold text-white text-sm">${watch.name}</h4>
+                        <p class="text-[11px] text-gray-400 line-clamp-2">${watch.description}</p>
+                        
+                        <div class="pt-3 border-t border-white/10 flex justify-between items-center">
+                            <div>
+                                <div class="text-[9px] text-gray-400">PRICE</div>
+                                <div class="text-gold font-bold text-base">KSh ${watch.price.toLocaleString()}</div>
+                            </div>
+                            <button onclick="openProductModal('${watch.id}')" class="gold-btn px-3 py-1.5 rounded-lg text-xs font-bold">
+                                Buy Watch
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterCatalogue() {
+            renderCatalogue();
+        }
+
+        function filterByTier(tierName) {
+            switchTab('watches');
+            document.getElementById('tierFilter').value = tierName;
+            renderCatalogue();
+        }
+
+        function renderRewards() {
+            const container = document.getElementById('rewardsCatalogueGrid');
+            if (!container) return;
+
+            container.innerHTML = DEFAULT_REWARDS.map(rw => `
+                <div class="glass-card rounded-2xl p-4 border border-gold/20 flex flex-col justify-between space-y-3">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center text-gold text-lg shrink-0">
+                            <i class="fa-solid ${rw.icon}"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-serif font-bold text-white text-sm">${rw.title}</h4>
+                            <p class="text-[11px] text-gray-300 mt-0.5">${rw.desc}</p>
+                        </div>
+                    </div>
+                    <div class="pt-3 border-t border-white/10 flex items-center justify-between">
+                        <div class="text-gold font-bold text-sm">${rw.cost} pts</div>
+                        <button onclick="redeemReward('${rw.id}')" class="px-3 py-1.5 rounded-lg border border-gold/40 text-gold hover:bg-gold hover:text-obsidian text-xs font-bold transition">
+                            Redeem
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function redeemReward(rewardId) {
+            const reward = DEFAULT_REWARDS.find(r => r.id === rewardId);
+            if (!reward) return;
+
+            if (appState.pointsWallet < reward.cost) {
+                showToast('Insufficient Points', `You need ${reward.cost} points to redeem ${reward.title}.`, 'fa-circle-xmark');
+                return;
+            }
+
+            // Process Redemption
+            appState.pointsWallet -= reward.cost;
+            appState.ledger.unshift({
+                id: 'tx-' + Date.now().toString().slice(-6),
+                type: 'Debit',
+                desc: `Redeemed ${reward.title}`,
+                amount: `-${reward.cost} pts`,
+                time: new Date().toLocaleString('sv-SE')
+            });
+
+            saveState();
+            updateUI();
+            showToast('Reward Redeemed!', `You have successfully redeemed ${reward.title}. Voucher code sent to your notifications.`, 'fa-circle-check');
+        }
+
+        function renderUserOrders() {
+            const container = document.getElementById('userOrdersList');
+            if (!container) return;
+
+            container.innerHTML = appState.orders.map(ord => `
+                <div class="p-3 rounded-xl bg-obsidian border border-white/10 flex justify-between items-center text-xs">
+                    <div>
+                        <div class="font-bold text-white">${ord.watchName}</div>
+                        <div class="text-[10px] text-gray-400">Order ID: ${ord.id} • ${ord.date}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-gold font-bold">KSh ${ord.price.toLocaleString()}</div>
+                        <span class="text-[9px] px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-semibold">${ord.status}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        /* ==========================================================================
+           4. PRODUCT MODAL & M-PESA TRANSACTIONS
+           ========================================================================== */
+
+        function openProductModal(watchId) {
+            const watch = appState.watches.find(w => w.id === watchId);
+            if (!watch) return;
+
+            appState.selectedWatchForPurchase = watch;
+
+            document.getElementById('modalWatchTitle').innerText = watch.name;
+            document.getElementById('modalWatchName').innerText = watch.name;
+            document.getElementById('modalWatchBrand').innerText = watch.brand;
+            document.getElementById('modalWatchPrice').innerText = `KSh ${watch.price.toLocaleString()}`;
+            document.getElementById('modalWatchImg').src = watch.image;
+            document.getElementById('modalWatchDesc').innerText = watch.description;
+            document.getElementById('modalWatchTierBadge').innerText = `${watch.tier} TIER`;
+            document.getElementById('modalSpecMovement').innerText = watch.movement;
+
+            openModal('productModal');
+        }
+
+        function triggerPurchaseWithMpesa() {
+            closeModal('productModal');
+            if (!appState.selectedWatchForPurchase) return;
+            
+            document.getElementById('mpesaAmount').value = appState.selectedWatchForPurchase.price;
+            openModal('mpesaTopupModal');
+        }
+
+        function executeMpesaPayment() {
+            const phone = document.getElementById('mpesaPhone').value;
+            const amount = parseFloat(document.getElementById('mpesaAmount').value);
+
+            if (!phone || isNaN(amount) || amount <= 0) {
+                showToast('Invalid Input', 'Please enter a valid phone number and payment amount.', 'fa-triangle-exclamation');
+                return;
+            }
+
+            closeModal('mpesaTopupModal');
+            showToast('STK Prompt Sent', 'Please confirm the M-Pesa PIN prompt on your handset...', 'fa-mobile-screen');
+
+            // Simulate Network Delay for M-Pesa Push Response
+            setTimeout(() => {
+                const nowStamp = new Date().toLocaleString('sv-SE');
+                const bonusPoints = Math.floor(amount / 200); // Earn 1 point per KSh 200 spent
+
+                appState.cashWallet += amount;
+                appState.pointsWallet += bonusPoints;
+
+                // Log Cash Deposit
+                appState.ledger.unshift({
+                    id: 'tx-' + Date.now().toString().slice(-6),
+                    type: 'Credit',
+                    desc: `M-Pesa Express Payment Received (${phone})`,
+                    amount: `+KSh ${amount.toLocaleString()}`,
+                    time: nowStamp
+                });
+
+                // Log Loyalty Bonus Earned
+                if (bonusPoints > 0) {
+                    appState.ledger.unshift({
+                        id: 'tx-' + Date.now().toString().slice(-6),
+                        type: 'Credit',
+                        desc: `Promotional Loyalty Reward for Watch Order`,
+                        amount: `+${bonusPoints} pts`,
+                        time: nowStamp
+                    });
+                }
+
+                // If purchasing a specific watch
+                if (appState.selectedWatchForPurchase) {
+                    const watch = appState.selectedWatchForPurchase;
+                    appState.cashWallet -= watch.price; // Deduct cash for product
+                    appState.orders.unshift({
+                        id: 'ORD-' + Math.floor(1000 + Math.random() * 9000),
+                        watchName: watch.name,
+                        price: watch.price,
+                        date: new Date().toISOString().split('T')[0],
+                        status: 'Processing Delivery'
+                    });
+
+                    appState.ledger.unshift({
+                        id: 'tx-' + Date.now().toString().slice(-6),
+                        type: 'Debit',
+                        desc: `Purchase Timepiece: ${watch.name}`,
+                        amount: `-KSh ${watch.price.toLocaleString()}`,
+                        time: nowStamp
+                    });
+
+                    appState.selectedWatchForPurchase = null;
+                }
+
+                saveState();
+                updateUI();
+                showToast('Payment Successful', 'M-Pesa transaction confirmed! Order status updated.', 'fa-circle-check');
+            }, 2000);
+        }
+
+        /* ==========================================================================
+           5. ADMIN CONTROLS & UTILITIES
+           ========================================================================== */
+
+        function toggleAdminView() {
+            appState.isAdmin = !appState.isAdmin;
+            const btnText = document.getElementById('adminBtnText');
+            if (appState.isAdmin) {
+                btnText.innerText = 'Exit Admin';
+                switchTab('admin');
+                showToast('Admin Mode Active', 'You now have executive store management controls.', 'fa-user-gear');
+            } else {
+                btnText.innerText = 'Admin Mode';
+                switchTab('home');
+            }
+        }
+
+        function adminGenerateNewCode() {
+            const characters = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let randomPart = '';
+            for (let i = 0; i < 4; i++) {
+                randomPart += characters.charAt(Math.floor(Math.random() * characters.length));
+            }
+            const generated = `WATCH-${randomPart}`;
+            document.getElementById('adminActiveCodeInput').value = generated;
+        }
+
+        function adminSaveCode() {
+            const code = document.getElementById('adminActiveCodeInput').value.trim().toUpperCase();
+            if (!code) return;
+
+            "" = code;
+            appState.lastClaimedDate = null; // Reset claim state for new daily code testing
+            saveState();
+            updateUI();
+            showToast('Code Updated', `Daily promotional code updated to ${code}.`, 'fa-circle-check');
+        }
+
+        function adminSaveCampaignDate() {
+            const dateVal = document.getElementById('adminCampaignDate').value;
+            if (!dateVal) return;
+
+            appState.campaignEndDate = new Date(dateVal).toISOString();
+            saveState();
+            startCountdown();
+            showToast('Campaign Expiration Updated', 'The countdown timer has been updated.', 'fa-clock');
+        }
+
+        function adminAddWatch(e) {
+            e.preventDefault();
+            const name = document.getElementById('newWatchName').value;
+            const brand = document.getElementById('newWatchBrand').value;
+            const price = parseFloat(document.getElementById('newWatchPrice').value);
+            const gender = document.getElementById('newWatchGender').value;
+            const stock = parseInt(document.getElementById('newWatchStock').value);
+            const image = document.getElementById('newWatchImage').value;
+
+            let tier = 'BASIC';
+            if (price >= 8000) tier = 'ELITE';
+            else if (price >= 5000) tier = 'PREMIUM';
+            else if (price >= 2000) tier = 'CLASSIC';
+
+            const newWatch = {
+                id: 'w-' + Date.now(),
+                name,
+                brand,
+                tier,
+                price,
+                gender,
+                stock,
+                movement: 'Quartz Precision',
+                image,
+                description: 'Authentic luxury timepiece backed by 2-year HOROLOGIX warranty.'
+            };
+
+            appState.watches.unshift(newWatch);
+            saveState();
+            updateUI();
+            document.getElementById('addWatchForm').reset();
+            showToast('Timepiece Added', `${name} is now live in the store catalogue.`, 'fa-circle-check');
+        }
+
+        /* ==========================================================================
+           6. COUNTDOWN TIMER ENGINE & TRANSPARENCY POLICIES
+           ========================================================================== */
+
+        function startCountdown() {
+            function updateTimer() {
+                const now = new Date().getTime();
+                const target = new Date(appState.campaignEndDate).getTime();
+                const diff = target - now;
+
+                if (diff <= 0) {
+                    document.getElementById('campaignTimer').innerText = 'Campaign Completed';
+                    return;
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('campaignTimer').innerText = `${days} days ${hours} hrs ${mins} mins ${secs} secs`;
+            }
+            updateTimer();
+            setInterval(updateTimer, 1000);
+        }
+
+        function openPolicyModal(type) {
+            const title = document.getElementById('policyModalTitle');
+            const body = document.getElementById('policyModalBody');
+
+            if (type === 'howItWorks') {
+                title.innerText = 'How HOROLOGIX Works';
+                body.innerHTML = `
+                    <p><strong>1. Genuine E-Commerce:</strong> HOROLOGIX is an official online watch boutique offering certified luxury timepieces priced between KSh 800 and KSh 10,000.</p>
+                    <p><strong>2. Customer Rewards:</strong> Every purchase and store activity earns you non-cash promotional reward points.</p>
+                    <p><strong>3. Daily Code Drops:</strong> Enter today's official active promotional code in your wallet to unlock randomized loyalty points (1-40 pts).</p>
+                    <p><strong>4. Point Redemption:</strong> Points can be redeemed exclusively for product discounts, shipping waivers, and care kits in our Rewards Store.</p>
+                `;
+            } else if (type === 'rewardTerms') {
+                title.innerText = 'Promotional Reward Terms & Disclosure';
+                body.innerHTML = `
+                    <p><strong>Non-Investment Policy:</strong> HOROLOGIX is strictly an e-commerce platform. Promotional points are loyalty incentives with zero monetary cash value and cannot be withdrawn as cash interest or guaranteed financial profit.</p>
+                    <p><strong>Campaign Maximum Duration:</strong> All promotional reward cycles have a strict 3-month maximum duration.</p>
+                `;
+            } else if (type === 'antiAbuse') {
+                title.innerText = 'Security & Anti-Abuse Rules';
+                body.innerHTML = `
+                    <p><strong>One Claim Per Account:</strong> Each user account is strictly limited to 1 daily reward code redemption per 24-hour cycle.</p>
+                    <p><strong>Server-Side Point Drop:</strong> Point values are generated via encrypted server-side weighted probability distributions to prevent browser tampering.</p>
+                `;
+            }
+            openModal('policyModal');
+        }
+
+        /* ==========================================================================
+           7. PERSISTENCE & MODAL HELPERS
+           ========================================================================== */
+
+        function saveState() {
+            localStorage.setItem('horologix_state_2026', JSON.stringify(appState));
+        }
+
+        function loadState() {
+            const saved = localStorage.getItem('horologix_state_2026');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    appState = { ...appState, ...parsed };
+                } catch(e) {
+                    console.error('State parse error', e);
+                }
+            }
+        }
+
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function showToast(title, message, iconClass = 'fa-circle-check') {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastTitle').innerText = title;
+            document.getElementById('toastMessage').innerText = message;
+            document.getElementById('toastIcon').innerHTML = `<i class="fa-solid ${iconClass}"></i>`;
+
+            toast.classList.remove('translate-x-full');
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+            }, 3500);
+        }
+
+        function copyReferralLink() {
+            const input = document.getElementById('referralLinkInput');
+            input.select();
+            document.execCommand('copy');
+            showToast('Copied!', 'Referral link copied to clipboard.', 'fa-copy');
+        }
+
+        // Initialize App on Window Load
+        window.onload = function() {
+            loadState();
+            updateUI();
+            startCountdown();
+        };
+    </script>
+
+<div id="whatsappCodeNotice" style="
+position:fixed;left:50%;bottom:82px;transform:translateX(-50%);
+z-index:40;max-width:92%;width:520px;padding:12px 16px;border-radius:14px;
+background:#17130b;border:1px solid rgba(212,175,55,.35);
+color:#e5e7eb;font-size:12px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.35);">
+<strong style="color:#d4af37;">DAILY PROMOTIONAL CODE</strong><br>
+Today's code is shared only in the official HOROLOGIX WhatsApp group.
+Enter the code in Rewards to claim your promotional points.
+</div>
+
+</body>
+</html>
