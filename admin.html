@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HOROLOGIX Admin</title>
+<style>
+body{margin:0;background:#080808;color:#eee;font-family:Inter,Arial,sans-serif}
+.wrap{max-width:1000px;margin:auto;padding:24px}.card{background:#111;border:1px solid #292929;border-radius:18px;padding:20px;margin:14px 0}
+h1,h2{margin-top:0}.gold{color:#d4af37}input,button{width:100%;box-sizing:border-box;padding:13px;border-radius:10px;margin:7px 0;border:1px solid #333;background:#0b0b0b;color:#fff}
+button{background:#d4af37;color:#080808;font-weight:800;border:0;cursor:pointer}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.stat{padding:18px;border:1px solid #292929;border-radius:14px;background:#0d0d0d}.muted{color:#999;font-size:13px}.danger{color:#ff8585}
+@media(max-width:700px){.grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1><span class="gold">HOROLOGIX</span> Admin</h1>
+<div id="login" class="card">
+<h2>Admin Login</h2>
+<input id="email" type="email" placeholder="Admin email">
+<input id="password" type="password" placeholder="Admin password">
+<button onclick="login()">Sign in</button><p id="loginMsg" class="danger"></p>
+</div>
+<div id="panel" style="display:none">
+<div class="grid">
+<div class="stat"><b id="users">0</b><br><span class="muted">Users</span></div>
+<div class="stat"><b id="watches">0</b><br><span class="muted">Watches</span></div>
+<div class="stat"><b id="claims">0</b><br><span class="muted">Claims</span></div>
+<div class="stat"><b id="points">0</b><br><span class="muted">Points issued</span></div>
+</div>
+<div class="card">
+<h2>Daily WhatsApp Code</h2>
+<p class="muted">Generate this code, then manually post the same code in the official HOROLOGIX WhatsApp group. It is never displayed on the user website.</p>
+<input id="code" placeholder="Example: HRO-7X29">
+<input id="expires" type="datetime-local">
+<button onclick="saveCode()">Activate Today's Code</button>
+<p id="codeMsg"></p>
+</div>
+<div class="card">
+<h2>Add Watch</h2>
+<input id="name" placeholder="Watch name"><input id="brand" placeholder="Brand">
+<input id="price" type="number" placeholder="Price (KSh 800–10,000)">
+<input id="gender" placeholder="Gender" value="Unisex">
+<input id="stock" type="number" placeholder="Stock" value="1">
+<input id="image" placeholder="Image URL"><input id="description" placeholder="Description">
+<button onclick="addWatch()">Add Watch</button><p id="watchMsg"></p>
+</div>
+</div></div>
+<script>
+const API=location.origin+"/api";
+let token=localStorage.getItem("h_admin_token")||"";
+async function api(path,opts={}){opts.headers={...(opts.headers||{}),"Content-Type":"application/json",...(token?{Authorization:"Bearer "+token}:{})};const r=await fetch(API+path,opts);const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||"Request failed");return d}
+async function login(){try{const d=await api("/admin/login",{method:"POST",body:JSON.stringify({email:email.value,password:password.value})});token=d.token;localStorage.setItem("h_admin_token",token);login.style.display="none";panel.style.display="block";load()}catch(e){loginMsg.textContent=e.message}}
+async function load(){const s=await api("/admin/stats");users.textContent=s.users;watches.textContent=s.watches;claims.textContent=s.claims;points.textContent=s.points}
+async function saveCode(){try{const d=await api("/admin/daily-code",{method:"POST",body:JSON.stringify({code:code.value,expiresAt:expires.value?new Date(expires.value).toISOString():null})});codeMsg.textContent="Activated: "+d.code+" — now post it in WhatsApp.";load()}catch(e){codeMsg.textContent=e.message}}
+async function addWatch(){try{await api("/admin/watches",{method:"POST",body:JSON.stringify({name:name.value,brand:brand.value,price:Number(price.value),gender:gender.value,stock:Number(stock.value),image:image.value,description:description.value})});watchMsg.textContent="Watch added.";load()}catch(e){watchMsg.textContent=e.message}}
+if(token){login.style.display="none";panel.style.display="block";load().catch(()=>{token="";localStorage.removeItem("h_admin_token");login.style.display="block";panel.style.display="none"})}
+</script>
+</body></html>
