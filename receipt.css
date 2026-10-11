@@ -1,0 +1,14 @@
+@page{size:80mm auto;margin:4mm}
+@media print{
+  body{background:#fff!important;margin:0!important}
+  body *{visibility:hidden!important}
+  #receipt-content,#receipt-content *{visibility:visible!important}
+  #receipt-content{position:absolute!important;left:0!important;top:0!important;width:72mm!important;max-width:72mm!important;margin:0!important;padding:0!important;font-family:Arial,sans-serif!important;color:#000!important}
+  .no-print,.modal-actions{display:none!important}
+  .receipt-paper{max-width:72mm!important;padding:0!important}
+  .receipt-title{font-size:17px!important}
+  .receipt-sub{font-size:9px!important}
+  .receipt-table{font-size:10px!important}
+  .receipt-table th,.receipt-table td{padding:4px 1px!important}
+  .receipt-rule{margin:7px 0!important}
+}

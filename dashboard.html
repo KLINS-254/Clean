@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>TICOH HOTEL POS</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/receipt.css" media="print">
+</head>
+<body class="app-body">
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="side-brand"><div class="brand-mark small">TH</div><div><strong>TICOH HOTEL</strong><small>POINT OF SALE</small></div></div>
+      <nav class="nav-list">
+        <button class="nav-item active" data-view="pos">▦ <span>New order</span></button>
+        <button class="nav-item" data-view="orders">▤ <span>Orders</span></button>
+        <button class="nav-item" data-view="kitchen">♨ <span>Kitchen & bar</span></button>
+        <button class="nav-item" data-view="menu">☷ <span>Menu management</span></button>
+        <button class="nav-item" data-view="users" data-roles="owner">♙ <span>Workers</span></button>
+        <button class="nav-item" data-view="reports" data-roles="owner,supervisor">▥ <span>Sales reports</span></button>
+      </nav>
+      <div class="sidebar-bottom"><span class="status-dot"></span> System ready <button id="logout-btn" class="logout-btn">Sign out ↗</button></div>
+    </aside>
+    <main class="main-area">
+      <header class="topbar">
+        <button class="mobile-menu" id="mobile-menu" aria-label="Open navigation">☰</button>
+        <div><p class="eyebrow">HOTEL OPERATIONS</p><h2 id="page-title">New order</h2></div>
+        <div class="user-chip"><div class="avatar" id="user-avatar">T</div><div><strong id="user-name">Loading…</strong><small id="user-role">Staff</small></div></div>
+      </header>
+      <div id="notice" class="notice" role="status"></div>
+      <section id="view-pos" class="view">
+        <div class="stats-grid">
+          <article class="stat-card"><span>Today's paid sales</span><strong id="stat-sales">KSh 0.00</strong><small>Paid orders only</small></article>
+          <article class="stat-card"><span>Orders today</span><strong id="stat-orders">0</strong><small>All recorded orders</small></article>
+          <article class="stat-card"><span>Awaiting payment</span><strong id="stat-pending">0</strong><small>Open balances</small></article>
+        </div>
+        <div class="pos-layout">
+          <section class="panel menu-panel">
+            <div class="section-heading"><div><p class="eyebrow">QUICK SERVICE</p><h3>Food & drinks</h3></div><input id="menu-search" class="search-input" placeholder="Search menu…" aria-label="Search menu"></div>
+            <div id="category-filters" class="category-filters"></div>
+            <div id="menu-grid" class="menu-grid"><p class="muted">Loading menu…</p></div>
+          </section>
+          <section class="panel cart-panel">
+            <div class="section-heading"><div><p class="eyebrow">CURRENT TRANSACTION</p><h3>Order cart</h3></div><button id="clear-cart" class="btn btn-quiet btn-sm">Clear</button></div>
+            <div class="order-options">
+              <label>Order type<select id="order-type"><option>Dine-in</option><option>Takeaway</option><option>Room service</option><option>Delivery</option></select></label>
+              <label>Table / reference<input id="table-no" placeholder="e.g. Table 04"></label>
+            </div>
+            <div id="cart-items" class="cart-items"><div class="empty-state">Your order is empty.<br>Choose items from the menu.</div></div>
+            <label class="cart-label">Order notes<textarea id="order-notes" rows="2" placeholder="Optional instructions…"></textarea></label>
+            <label class="cart-label">Discount (KSh)<input id="discount" type="number" min="0" step="1" value="0"></label>
+            <div class="totals"><div><span>Subtotal</span><strong id="cart-subtotal">KSh 0.00</strong></div><div><span>Discount</span><strong id="cart-discount">KSh 0.00</strong></div><div class="grand-total"><span>Total</span><strong id="cart-total">KSh 0.00</strong></div></div>
+            <button id="place-order" class="btn btn-primary full">Place order & continue →</button>
+            <p class="tiny muted">Payment is recorded separately after the order is saved.</p>
+          </section>
+        </div>
+      </section>
+      <section id="view-orders" class="view hidden"><div class="panel"><div class="section-heading"><div><p class="eyebrow">TRANSACTION RECORDS</p><h3>Recent orders</h3></div><button class="btn btn-secondary" id="refresh-orders">Refresh</button></div><div class="table-wrap"><table><thead><tr><th>Order</th><th>Time</th><th>Type / Table</th><th>Worker</th><th>Total</th><th>Payment</th><th>Status</th><th>Actions</th></tr></thead><tbody id="orders-body"></tbody></table></div></div></section>
+      <section id="view-kitchen" class="view hidden"><div class="panel"><div class="section-heading"><div><p class="eyebrow">LIVE SERVICE</p><h3>Kitchen & bar tickets</h3></div><button class="btn btn-secondary" id="refresh-kitchen">Refresh</button></div><div id="kitchen-list" class="ticket-grid"></div></div></section>
+      <section id="view-menu" class="view hidden"><div class="panel"><div class="section-heading"><div><p class="eyebrow">PRODUCT CATALOGUE</p><h3>Menu management</h3></div></div><form id="menu-form" class="form-grid"><label>Item name<input name="name" required placeholder="e.g. Grilled chicken"></label><label>Category<input name="category" required placeholder="e.g. Main Meals"></label><label>Selling price (KSh)<input name="price" type="number" min="0" step=".01" required></label><label>Cost price (optional)<input name="cost_price" type="number" min="0" step=".01" value="0"></label><label>Destination<select name="destination"><option value="kitchen">Kitchen</option><option value="bar">Bar</option></select></label><div class="form-action"><button class="btn btn-primary" type="submit">Add menu item</button></div></form><div class="table-wrap"><table><thead><tr><th>Item</th><th>Category</th><th>Price</th><th>Destination</th><th>Status</th><th>Action</th></tr></thead><tbody id="menu-body"></tbody></table></div></div></section>
+      <section id="view-users" class="view hidden"><div class="panel"><div class="section-heading"><div><p class="eyebrow">TEAM ACCESS</p><h3>Worker accounts</h3></div></div><form id="user-form" class="form-grid"><label>Full name<input name="name" required></label><label>Username<input name="username" required></label><label>Temporary password<input name="password" type="password" minlength="10" required></label><label>Role<select name="role"><option value="cashier">Cashier</option><option value="waiter">Waiter / Waitress</option><option value="kitchen">Kitchen staff</option><option value="bar">Bar attendant</option><option value="supervisor">Supervisor</option></select></label><div class="form-action"><button class="btn btn-primary">Create worker</button></div></form><div class="table-wrap"><table><thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Status</th><th>Action</th></tr></thead><tbody id="users-body"></tbody></table></div></div></section>
+      <section id="view-reports" class="view hidden"><div class="stats-grid report-stats"><article class="stat-card"><span>Paid sales today</span><strong id="report-sales">KSh 0.00</strong></article><article class="stat-card"><span>Outstanding balance</span><strong id="report-outstanding">KSh 0.00</strong></article><article class="stat-card"><span>Cancelled orders</span><strong id="report-cancelled">0</strong></article></div><div class="panel"><div class="section-heading"><div><p class="eyebrow">MENU PERFORMANCE</p><h3>Top-selling items today</h3></div><button class="btn btn-secondary" id="export-orders">Export orders CSV</button></div><div class="table-wrap"><table><thead><tr><th>Item</th><th>Quantity sold</th><th>Sales value</th></tr></thead><tbody id="top-items-body"></tbody></table></div><p class="tiny muted">This starter report uses today's recorded orders. Configure tax, service charge, expenses and inventory costing before relying on profit calculations.</p></div></section>
+    </main>
+  </div>
+
+  <dialog id="payment-dialog" class="modal">
+    <form id="payment-form" method="dialog">
+      <div class="section-heading"><div><p class="eyebrow">CHECKOUT</p><h3>Record payment</h3></div><button type="button" class="icon-btn" id="close-payment" aria-label="Close">✕</button></div>
+      <p id="payment-order-info" class="muted"></p>
+      <div class="payment-due">Balance due <strong id="payment-due">KSh 0.00</strong></div>
+      <label>Amount received (KSh)<input id="payment-amount" type="number" min=".01" step=".01" required></label>
+      <label>Payment method<select id="payment-method"><option>Cash</option><option>M-Pesa</option><option>Card</option><option>Bank transfer</option><option>Other</option></select></label>
+      <label id="mpesa-ref-wrap" class="hidden">M-Pesa transaction code<input id="mpesa-ref" placeholder="e.g. QAB12CD34"></label>
+      <p id="cash-change" class="change-line">Change due: KSh 0.00</p>
+      <div class="modal-actions"><button type="button" class="btn btn-secondary" id="skip-payment">Pay later</button><button type="submit" class="btn btn-primary">Save payment</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="receipt-dialog" class="modal receipt-modal">
+    <div class="modal-actions no-print"><button class="btn btn-secondary" id="close-receipt">Close</button><button class="btn btn-secondary" id="download-receipt">Print / Save PDF</button></div>
+    <div id="receipt-content" class="receipt-paper"></div>
+  </dialog>
+  <script src="/app.js"></script>
+</body>
+</html>
