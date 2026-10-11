@@ -1,6 +1,6 @@
 /* SAMRYC DISHES POS. Set your Supabase URL and publishable/anon key below. */
-const SUPABASE_URL = "YOUR_SUPABASE_PROJECT_URL";
-const SUPABASE_ANON_KEY = "YOUR_SUPABASE_PUBLISHABLE_OR_ANON_KEY";
+const SUPABASE_URL = "https://cfkyqxddkqhfksodbtkn.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_h3MRI_ycKZIswLs0sl4VMA_V_sGkAfC";
 const db = window.supabase && SUPABASE_URL.startsWith("https://") && !SUPABASE_URL.includes("YOUR_")
   ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY) : null;
 
