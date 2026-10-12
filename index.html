@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101828">
+  <title>SAMRYC DISHES | POS</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script defer src="script.js"></script>
+</head>
+<body>
+  <main id="loginView" class="login-wrap">
+    <section class="login-card">
+      <div class="brand-mark">SD</div>
+      <p class="eyebrow">HOTEL POINT OF SALE</p>
+      <h1>SAMRYC <span>DISHES</span></h1>
+      <p class="muted">Sign in to manage orders and payments.</p>
+      <form id="loginForm">
+        <label for="roleSelect">Login as</label>
+        <select id="roleSelect" required>
+          <option value="">Select your role</option>
+          <option>Owner</option><option>Waiter 1</option><option>Waiter 2</option>
+          <option>Waiter 3</option><option>Waiter 4</option><option>Cashier</option>
+        </select>
+        <label for="loginEmail">Email / username</label>
+        <input id="loginEmail" type="email" autocomplete="username" placeholder="staff@example.com" required>
+        <label for="loginPassword">Password</label>
+        <input id="loginPassword" type="password" autocomplete="current-password" required>
+        <button class="btn primary full" type="submit">Sign in</button>
+        <p id="loginMessage" class="message" role="status"></p>
+      </form>
+      <p class="tiny muted">Staff accounts must be created by the system owner.</p>
+    </section>
+  </main>
+
+  <div id="appView" class="app hidden">
+    <aside class="sidebar">
+      <div class="side-brand"><div class="brand-mark small">SD</div><div><strong>SAMRYC</strong><small>DISHES POS</small></div></div>
+      <nav id="mainNav">
+        <button data-page="dashboard" class="nav-item active">▦ <span>Dashboard</span></button>
+        <button data-page="new-order" class="nav-item">＋ <span>New order</span></button>
+        <button data-page="orders" class="nav-item">☷ <span>All orders</span></button>
+        <button data-page="menu" class="nav-item">☰ <span>Food & drinks menu</span></button>
+        <button data-page="cashier" class="nav-item">▣ <span>Cashier & receipts</span></button>
+        <button data-page="sales" class="nav-item">↗ <span>Sales today</span></button>
+        <button data-page="staff" class="nav-item owner-only">♙ <span>Staff accounts</span></button>
+        <button data-page="settings" class="nav-item owner-only">⚙ <span>Hotel settings</span></button>
+      </nav>
+      <div class="side-bottom"><span class="status-dot"></span> System connected</div>
+    </aside>
+
+    <section class="workspace">
+      <header class="topbar">
+        <div><p class="eyebrow">SAMRYC DISHES</p><h2 id="pageTitle">Dashboard</h2></div>
+        <div class="user-box"><div class="avatar" id="userInitials">SD</div><div><strong id="userName">Staff</strong><small id="userRole">Role</small></div><button id="logoutBtn" class="btn outline">Logout</button></div>
+      </header>
+      <div id="appMessage" class="app-message" role="status"></div>
+
+      <section id="page-dashboard" class="page">
+        <div class="welcome"><div><p class="eyebrow">OVERVIEW</p><h2>Good service starts here.</h2><p class="muted">Manage orders, payments and daily performance.</p></div><button class="btn primary" data-goto="new-order">＋ New order</button></div>
+        <div class="stats-grid">
+          <article class="stat-card"><span>Today's sales</span><strong id="statSales">KSh 0.00</strong><small>Paid orders today</small></article>
+          <article class="stat-card"><span>Orders today</span><strong id="statOrders">0</strong><small>All statuses</small></article>
+          <article class="stat-card"><span>Awaiting payment</span><strong id="statUnpaid">0</strong><small>Orders not yet paid</small></article>
+          <article class="stat-card"><span>Preparing</span><strong id="statPreparing">0</strong><small>Kitchen queue</small></article>
+        </div>
+        <div class="section-heading"><div><h3>Recent orders</h3><p class="muted">Latest activity in your hotel</p></div><button class="btn outline" data-goto="orders">View all</button></div>
+        <div id="recentOrders" class="order-list"></div>
+      </section>
+
+      <section id="page-new-order" class="page hidden">
+        <div class="section-heading"><div><h3>Create an order</h3><p class="muted">Choose items and confirm the order.</p></div></div>
+        <div class="order-builder">
+          <div class="menu-panel">
+            <div class="toolbar"><input id="menuSearch" placeholder="Search food or drinks…"><select id="categoryFilter"><option value="all">All categories</option></select></div>
+            <div id="menuGrid" class="menu-grid"></div>
+          </div>
+          <aside class="cart-panel">
+            <h3>Current order</h3>
+            <div class="form-row"><div><label for="orderType">Order type</label><select id="orderType"><option value="Table">Table</option><option value="Takeaway">Takeaway</option></select></div><div id="tableWrap"><label for="tableNumber">Table no.</label><input id="tableNumber" placeholder="e.g. 4"></div></div>
+            <label for="customerName">Customer name (optional)</label><input id="customerName" placeholder="Customer name">
+            <div id="cartItems" class="cart-items"><p class="muted">No items added yet.</p></div>
+            <div class="total-line"><span>Subtotal</span><strong id="cartSubtotal">KSh 0.00</strong></div>
+            <div class="total-line grand"><span>Total</span><strong id="cartTotal">KSh 0.00</strong></div>
+            <button id="submitOrder" class="btn primary full">Save order</button>
+            <button id="clearCart" class="btn outline full">Clear order</button>
+          </aside>
+        </div>
+      </section>
+
+      <section id="page-orders" class="page hidden">
+        <div class="section-heading"><div><h3>All orders</h3><p class="muted">Track and update order progress.</p></div><button class="btn primary" data-goto="new-order">＋ New order</button></div>
+        <div class="toolbar"><input id="ordersSearch" placeholder="Search order, table or staff…"><select id="ordersStatus"><option value="all">All statuses</option><option>Pending</option><option>Preparing</option><option>Ready</option><option>Completed</option><option>Cancelled</option></select></div>
+        <div id="ordersList" class="order-list"></div>
+      </section>
+
+      <section id="page-menu" class="page hidden">
+        <div class="section-heading"><div><h3>Food & drinks menu</h3><p class="muted">Menu items and prices in Kenyan shillings.</p></div><button id="addMenuBtn" class="btn primary owner-only">＋ Add item</button></div>
+        <div class="toolbar"><input id="menuManageSearch" placeholder="Search menu…"><select id="menuManageCategory"><option value="all">All categories</option></select></div>
+        <div id="manageMenuGrid" class="manage-menu-grid"></div>
+        <div id="menuEditor" class="panel hidden">
+          <h3 id="menuEditorTitle">Add menu item</h3>
+          <form id="menuForm" class="editor-grid">
+            <input type="hidden" id="menuItemId">
+            <div><label for="itemName">Item name</label><input id="itemName" required></div>
+            <div><label for="itemCategory">Category</label><select id="itemCategory" required><option>Breakfast</option><option>Main Meals</option><option>Snacks</option><option>Soft Drinks</option><option>Hot Drinks</option><option>Water</option><option>Other Items</option></select></div>
+            <div><label for="itemPrice">Price (KSh)</label><input id="itemPrice" type="number" min="0" step="0.01" required></div>
+            <div><label for="itemAvailable">Availability</label><select id="itemAvailable"><option value="true">Available</option><option value="false">Unavailable</option></select></div>
+            <div class="editor-actions"><button class="btn primary" type="submit">Save item</button><button id="cancelMenuEdit" class="btn outline" type="button">Cancel</button></div>
+          </form>
+        </div>
+      </section>
+
+      <section id="page-cashier" class="page hidden">
+        <div class="section-heading"><div><h3>Cashier & receipts</h3><p class="muted">Settle unpaid orders and print receipts.</p></div></div>
+        <div id="cashierOrders" class="order-list"></div>
+        <div id="paymentPanel" class="panel hidden">
+          <h3 id="paymentHeading">Record payment</h3>
+          <p id="paymentOrderSummary" class="muted"></p>
+          <form id="paymentForm">
+            <input type="hidden" id="paymentOrderId">
+            <div class="editor-grid">
+              <div><label for="paymentMethod">Payment method</label><select id="paymentMethod"><option>Cash</option><option>M-Pesa</option><option>Other</option></select></div>
+              <div><label for="amountPaid">Amount received (KSh)</label><input id="amountPaid" type="number" min="0" step="0.01" required></div>
+            </div>
+            <div class="total-line grand"><span>Change</span><strong id="paymentChange">KSh 0.00</strong></div>
+            <div class="button-row"><button class="btn primary" type="submit">Confirm payment</button><button id="cancelPayment" class="btn outline" type="button">Cancel</button></div>
+          </form>
+        </div>
+        <div id="receiptPanel" class="panel hidden">
+          <div class="section-heading"><div><h3>Receipt preview</h3><p class="muted">Use the browser print dialog to print or save as PDF.</p></div><button id="printReceipt" class="btn primary">Print receipt</button></div>
+          <div id="receiptContent" class="receipt"></div>
+        </div>
+      </section>
+
+      <section id="page-sales" class="page hidden">
+        <div class="section-heading"><div><h3>Sales today</h3><p class="muted">Based on recorded successful payments.</p></div><button id="refreshSales" class="btn outline">Refresh</button></div>
+        <div class="stats-grid"><article class="stat-card"><span>Paid sales</span><strong id="salesTotal">KSh 0.00</strong></article><article class="stat-card"><span>Payments</span><strong id="salesCount">0</strong></article><article class="stat-card"><span>Cash</span><strong id="salesCash">KSh 0.00</strong></article><article class="stat-card"><span>M-Pesa</span><strong id="salesMpesa">KSh 0.00</strong></article></div>
+        <div class="panel"><h3>Today's payment records</h3><div id="paymentRecords" class="order-list"></div></div>
+      </section>
+
+      <section id="page-staff" class="page hidden">
+        <div class="section-heading"><div><h3>Staff accounts</h3><p class="muted">Create login accounts for your team.</p></div></div>
+        <div class="panel">
+          <p class="notice">Create staff accounts securely through the included Supabase Edge Function. Never create staff accounts by placing an admin key in this browser.</p>
+          <form id="staffForm" class="editor-grid">
+            <div><label for="staffName">Staff full name</label><input id="staffName" required></div>
+            <div><label for="staffEmail">Email address</label><input id="staffEmail" type="email" required></div>
+            <div><label for="staffRole">Role</label><select id="staffRole"><option>Waiter 1</option><option>Waiter 2</option><option>Waiter 3</option><option>Waiter 4</option><option>Cashier</option><option>Owner</option></select></div>
+            <div><label for="staffPassword">Temporary password (min. 8 characters)</label><input id="staffPassword" type="password" minlength="8" required></div>
+            <div class="editor-actions"><button class="btn primary" type="submit">Create staff account</button></div>
+          </form>
+        </div>
+        <div class="panel"><h3>Current staff</h3><div id="staffList" class="order-list"></div></div>
+      </section>
+
+      <section id="page-settings" class="page hidden">
+        <div class="section-heading"><div><h3>Hotel settings</h3><p class="muted">These details appear on printed receipts.</p></div></div>
+        <div class="panel">
+          <form id="settingsForm" class="editor-grid">
+            <div><label for="hotelName">Hotel name</label><input id="hotelName" value="SAMRYC DISHES" required></div>
+            <div><label for="hotelPhone">Phone number</label><input id="hotelPhone" placeholder="+254…"></div>
+            <div class="wide"><label for="hotelAddress">Hotel address</label><input id="hotelAddress" placeholder="Town / street / location"></div>
+            <div class="editor-actions"><button class="btn primary" type="submit">Save settings</button></div>
+          </form>
+        </div>
+      </section>
+    </section>
+  </div>
+  <div id="printRoot" class="print-only"></div>
+</body>
+</html>
