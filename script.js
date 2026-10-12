@@ -107,7 +107,7 @@ function orderCard(o){
   if(o.status!=="Cancelled"&&o.status!=="Completed"&&canOrder()){
     actions.push(`<select aria-label="Update status" onchange="updateOrderStatus('${o.id}',this.value)">${["Pending","Preparing","Ready","Completed","Cancelled"].map(s=>`<option ${o.status===s?"selected":""}>${s}</option>`).join("")}</select>`);
   }
-  if(!o.paid&&o.status!=="Cancelled"&&canCashier())actions.push(`<button type="button" class="btn primary" data-pay-order="${o.id}">Take payment</button>`);
+  if(!o.paid&&o.status!=="Cancelled"&&canCashier())actions.push(`<button type="button" class="btn primary" onclick="openPayment('${o.id}')">Take payment</button>`);
   if(o.paid)actions.push(`<button class="btn outline" onclick="showReceipt('${o.id}')">Receipt</button>`);
   return `<article class="order-card"><div><div class="order-top"><strong>${esc(o.order_number)}</strong><span class="pill ${esc(o.status)}">${esc(o.status)}</span><span class="pill ${o.paid?"paid":"unpaid"}">${o.paid?"Paid":"Unpaid"}</span></div><div class="order-detail"><b>${loc}</b>${o.customer_name?" · "+esc(o.customer_name):""}<br>${esc(itemsText(o))}<br>${esc(o.staff_name||"Staff")} · ${dt}</div></div><div><div class="order-amount">${money(o.total)}</div><div class="order-actions">${actions.join("")}</div></div></article>`;
 }
@@ -176,14 +176,28 @@ function renderCashier(){
   $("cashierOrders").innerHTML=list.map(orderCard).join("")||empty("No orders are awaiting payment.");
 }
 function openPayment(id){
-  if(!canCashier()){message("Only the Owner or Cashier can take payments.",true);return;}
-  const panel=$("paymentPanel");
-  if(!panel){message("Payment panel is missing. Please update index.html.",true);return;}
-  const o=state.orders.find(x=>x.id===id);
-  if(!o){message("Order not found. Refresh the page and try again.",true);return;}
-  if(o.paid){message("This order has already been paid.",true);return;}
-  state.activeOrder=o;$("paymentOrderId").value=id;$("paymentHeading").textContent="Payment for "+o.order_number;$("paymentOrderSummary").textContent=`${o.order_type==="Takeaway"?"Takeaway":"Table "+o.table_number} · ${itemsText(o)} · Total ${money(o.total)}`;
-  $("amountPaid").value=o.total;$("paymentChange").textContent=money(0);$("paymentPanel").classList.remove("hidden");$("paymentPanel").scrollIntoView({behavior:"smooth",block:"start"});
+  try {
+    if(!canCashier()){message("Only the Owner or Cashier can take payments.",true);return;}
+    const panel=$("paymentPanel");
+    if(!panel){message("Payment panel is missing. Check that index.html contains id=\"paymentPanel\".",true);return;}
+    const o=state.orders.find(x=>String(x.id)===String(id));
+    if(!o){message("Order not found in the current list. Refresh the page and try again.",true);return;}
+    if(o.paid){message("This order has already been paid.",true);return;}
+    const required=["paymentOrderId","paymentHeading","paymentOrderSummary","amountPaid","paymentChange"];
+    const missing=required.filter(key=>!$(key));
+    if(missing.length){message("Payment form is missing: "+missing.join(", ")+". Update index.html.",true);return;}
+    state.activeOrder=o;
+    $("paymentOrderId").value=o.id;
+    $("paymentHeading").textContent="Payment for "+o.order_number;
+    $("paymentOrderSummary").textContent=`${o.order_type==="Takeaway"?"Takeaway":"Table "+(o.table_number||"—")} · ${itemsText(o)} · Total ${money(o.total)}`;
+    $("amountPaid").value=o.total;
+    $("paymentChange").textContent=money(0);
+    panel.classList.remove("hidden");
+    panel.scrollIntoView({behavior:"smooth",block:"start"});
+  } catch(err) {
+    console.error("Open payment failed:",err);
+    message("Could not open payment: "+(err?.message||"Unknown error"),true);
+  }
 }
 function calcChange(){const o=state.activeOrder;const paid=Number($("amountPaid").value||0);$("paymentChange").textContent=money(Math.max(0,moneyNum(paid-Number(o?.total||0))))}
 async function recordPayment(e){
@@ -239,7 +253,7 @@ $("loginForm").addEventListener("submit",runAction(async e=>{e.preventDefault();
 $("logoutBtn").addEventListener("click",signOut);
 $("mainNav").addEventListener("click",e=>{const b=e.target.closest("[data-page]");if(b)page(b.dataset.page)});
 document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>page(b.dataset.goto)));
-document.addEventListener("click",e=>{const b=e.target.closest("[data-pay-order]");if(!b)return;try{openPayment(b.dataset.payOrder)}catch(err){console.error("Open payment failed:",err);message(err.message||"Could not open payment panel.",true)}});
+
 $("menuSearch").addEventListener("input",renderMenu);$("categoryFilter").addEventListener("change",renderMenu);
 $("ordersSearch").addEventListener("input",renderOrders);$("ordersStatus").addEventListener("change",renderOrders);
 $("menuManageSearch").addEventListener("input",renderManageMenu);$("menuManageCategory").addEventListener("change",renderManageMenu);
